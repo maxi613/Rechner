@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, Inject } from '@angular/core';
+import { SuperbaseService } from './services/superbase.service';
+import { usage } from './shared/models/usage.model';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,24 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Rechner';
+  private superbaseService: SuperbaseService = inject(SuperbaseService); 
+  ngOnInit(){
+  }
+
+  login(){
+    this.superbaseService.signIn().then((resp)=>{
+      console.log(`Login: ${resp.data}`)
+    }); 
+  }
+
+  logout(){
+    this.superbaseService.signOut(); 
+  }
+
+  getData(){
+  this.superbaseService.getUsage().then((values)=>{
+    console.log(values)
+
+  });
+  }
 }
