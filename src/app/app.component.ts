@@ -22,10 +22,8 @@ export class AppComponent {
     this.superbaseService.signOut(); 
   }
 
-  getData(){
-  this.superbaseService.getUsage().then((values)=>{
-    console.log(values)
-
-  });
+  async getData(){
+    let data = await  this.superbaseService.getUsage();
+    console.log(data)
   }
 }

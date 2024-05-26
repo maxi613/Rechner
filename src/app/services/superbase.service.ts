@@ -58,7 +58,7 @@ export class SuperbaseService {
 
     const { data, error } = await this.superbaseClient
     .from('Verbräuche')
-    .select('Monat')
+    .select('*')
 
     return { data, error }
   }
