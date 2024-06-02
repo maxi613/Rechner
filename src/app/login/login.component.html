@@ -1,12 +1,14 @@
-<div class="login-form">
-    <h1>Sign In</h1>  
-    <div class="form__group field">
-        <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
-        <label for="name" class="form__label">E-Mail</label>
+<form [formGroup]="login" (ngSubmit)="submit()">
+    <div class="login-form">
+        <h1>Sign In</h1>  
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Name" name="name" id='mail' formControlName="mail" required />
+                <label for="mail" class="form__label">E-Mail</label>
+            </div>
+            <div class="form__group field">
+                <input type="password" class="form__field" placeholder="Name" name="name" id='pw' formControlName="pw" required />
+                <label for="pw" class="form__label">Passwort</label>
+            </div>
+            <button type="submit" class="login-in-submit"  > Sign In</button>
     </div>
-    <div class="form__group field">
-        <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
-        <label for="name" class="form__label">Passwort</label>
-    </div>
-    <button class="login-in-submit"> Sign In</button>
-</div>
+</form>

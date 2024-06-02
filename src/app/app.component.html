@@ -1,1 +1,8 @@
-<app-login></app-login>
+<div class="main-div">
+    @if (islogouted) {
+        <app-login></app-login>
+    }@else {
+        <button (click)="logout()"> Logout</button>
+        <a >Loged in</a>
+    }
+</div>

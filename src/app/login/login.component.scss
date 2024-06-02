@@ -3,12 +3,17 @@ $secondary: #41e400;
 $white: #fff;
 $gray: #9b9b9b;
 
+form{
+    width: auto;
+    height: auto;
+    margin-right: 3rem;
+}
 .login-form{
     padding: 20px; 
     border-radius: 10px;
     background-color: rgb(90, 90, 90);
     height: 50%;
-    width: 25%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
