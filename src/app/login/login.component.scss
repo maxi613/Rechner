@@ -1,5 +1,5 @@
 $primary: #00b45a;
-$secondary: #41e400;
+$secondary: #83e05e;
 $white: #fff;
 $gray: #9b9b9b;
 
@@ -20,10 +20,15 @@ form{
     align-items: center;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     h1{
-        color: #31a400;
+        color: $secondary;
+    }
+
+    .form-error{
+        color: rgb(255, 0, 0);
+        font-style: italic;
     }
     .login-in-submit{
-        background-color: #31a400;
+        background-color: $secondary;
         width: 100%;
         margin-top: 20px;
         margin-left: 100px;

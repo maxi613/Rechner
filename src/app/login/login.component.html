@@ -5,10 +5,13 @@
                 <input type="input" class="form__field" placeholder="Name" name="name" id='mail' formControlName="mail" required />
                 <label for="mail" class="form__label">E-Mail</label>
             </div>
+            <div class="form-error" *ngIf="login.get('mail')?.errors && login.get('mail')?.touched">*E-Mail fehlt</div>
             <div class="form__group field">
                 <input type="password" class="form__field" placeholder="Name" name="name" id='pw' formControlName="pw" required />
                 <label for="pw" class="form__label">Passwort</label>
             </div>
-            <button type="submit" class="login-in-submit"  > Sign In</button>
+            
+            <div class="form-error" *ngIf="login.get('pw')?.errors && login.get('pw')?.touched">*Password fehlt</div>
+            <button type="submit" class="login-in-submit" disabled="login.invalid"> Sign In</button>
     </div>
 </form>

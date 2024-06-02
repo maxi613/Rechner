@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SuperbaseService } from '../services/superbase.service';
 
 @Component({
@@ -10,8 +10,8 @@ import { SuperbaseService } from '../services/superbase.service';
 export class LoginComponent {
 
   login = new FormGroup({
-    mail :new FormControl(''),
-    pw :new FormControl('')
+    mail :new FormControl('', [Validators.required]),
+    pw :new FormControl('',[Validators.required])
   });
 
   private superbaseService: SuperbaseService = inject(SuperbaseService); 
