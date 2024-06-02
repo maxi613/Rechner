@@ -1,6 +1,7 @@
 import { Component, inject, Inject } from '@angular/core';
 import { SuperbaseService } from './services/superbase.service';
 import { usage } from './shared/models/usage.model';
+import { LoginComponent } from './login/login.component';
 
 @Component({
   selector: 'app-root',
