@@ -19,4 +19,9 @@ export class LoginComponent {
   submit(){
     this.superbaseService.signIn(this.login.value.mail, this.login.value.pw);
   }
+
+  getData(){
+    this.superbaseService.getUsage(); 
+  }
+  
 }

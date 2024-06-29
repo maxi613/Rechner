@@ -1,0 +1,49 @@
+<form [formGroup]="house" (ngSubmit)="submit()" >
+    <div class="house-form">
+        <h2>Hausangaben</h2> 
+        <div class="checkform">
+            <mat-chip-option class="mat-chip" id="chip" [selected]="hasEnergyclass" (selectionChange)="checkEnergyclass()">Energieausweis vorhanden?</mat-chip-option>
+        </div> 
+
+        @if(hasEnergyclass){
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Wohnfläche [m²]" name="area" id='area' formControlName="area" required />
+                <label for="area" class="form__label">Wohnfläche [m²]</label>
+            </div>
+            <div class="form-error" *ngIf="house.get('area')?.errors && house.get('area')?.touched">*Wohnfläche fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Energieausweis" name="energyHeating" id='energyHeating' formControlName="energyHeating" required />
+                <label for="energyHeating" class="form__label">Wärmebedarf Heizen [kWh]</label>
+            </div>
+            <div class="form-error" *ngIf="house.get('energyHeating')?.errors && house.get('energyHeating')?.touched">*Wärmebedarf Heizen fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Energieausweis" name="energyWater" id='energyWater' formControlName="energyWater" required />
+                <label for="energyWater" class="form__label">Wärmebedarf Warmwasser [kWh]</label>
+            </div>
+            <div class="form-error" *ngIf="house.get('energyWater')?.errors && house.get('energyWater')?.touched">*Wärmebedarf Warmwasser</div>
+            }@else {
+                <div class="select-form">
+                    <label>Gebäudedämmung: </label>
+                    <div class="select">
+                        <select  formControlName="insolation">
+                            @for (insolation of Insulations; track $index) {
+                            <option [value]="insolation">{{insolation}}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            }
+            <div class="checkform">
+                <label>E-Auto:</label>
+                <input class="checkbox" id="checkbox-car" type="checkbox" formControlName="electricCar"/>
+                <label class="checklabel" for="checkbox-car" ></label>
+            </div>
+            <div class="checkform">
+                <label>Fussbodenheizung:</label>
+                <input class="checkbox" id="checkbox-heating" type="checkbox" formControlName="floorHeating"/>
+                <label class="checklabel" for="checkbox-heating" ></label>
+            </div>
+
+    </div>
+    <button type="submit" class="login-in-submit"  > Sign In</button>
+</form>

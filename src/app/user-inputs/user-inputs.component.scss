@@ -1,0 +1,245 @@
+@use '@angular/material' as mat;
+
+$primary: #00b45a;
+$secondary: #83e05e;
+$white: #fff;
+$gray: #b3b3b3;
+
+form{
+    width: 100%;
+    height: auto;
+    margin-right: 3rem;
+}
+.house-form{
+    padding: 20px; 
+    border-radius: 10px;
+    background-color: rgb(90, 90, 90);
+    height: 50%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    h2{
+        color: $secondary;
+        margin-left: 25%;
+    }
+
+    .form-error{
+        color: rgb(255, 0, 0);
+        font-style: italic;
+    }
+    .login-in-submit{
+        background-color: $secondary;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-top: 20px;
+        margin-left: 100px;
+        margin-right: 100px;
+        color: rgba(85, 85, 85, 0.845);
+        border-radius: 5px;
+        border: none;
+        font-size: 16px;
+        transition: all 0.2s;
+        font-weight: bold;
+        &:hover{
+            cursor: pointer;
+            background-color: #35bc00;
+            color: white;
+
+        }
+    }
+    .form__group {
+    position: relative;
+    padding: 15px 0 0;
+    margin-top: 10px;
+    width: 100%;
+    }
+    
+    .form__field {
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid $gray;
+    outline: 0;
+    font-size: 16px;
+    color: $white;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+    
+        &::placeholder {
+            color: transparent;
+        }
+        
+        &:placeholder-shown ~ .form__label {
+            font-size: 16px;
+            cursor: text;
+            top: 20px;
+        }
+    }
+    
+    .form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 16px;
+    color: $gray;
+    }
+    
+    .form__field:focus {
+        ~ .form__label {
+            position: absolute;
+            top: 0;
+            display: block;
+            transition: 16px;
+            font-size: 1rem;
+            color: $primary;   
+        }
+    padding-bottom: 6px;  
+    border-width: 3px;
+    border-image: linear-gradient(to right, $primary,$secondary);
+    border-image-slice: 1;
+    }
+    /* reset input */
+    .form__field{
+    &:required,&:invalid { box-shadow:none; }
+    }      
+}
+
+
+.checkform{
+    .mat-chip{
+        background-color: $gray;
+        transition: all 0.2s;
+        &:hover{
+            background-color: #83e05e;
+        }
+
+    }
+
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    label{
+
+        font-size: 16px;
+        color: $gray;
+        margin-right: 10px;
+    }
+    .checkbox{
+        
+        display: none;
+    }
+
+      
+    .checkbox + .checklabel {
+        font-size: 1.2rem;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: .1rem solid $gray;
+        border-radius: 50%;
+        background: $gray;
+        transition: .1s all;
+        cursor: pointer;
+
+        z-index: 999 !important;
+    }
+    
+    .checkbox + .checklabel:hover {
+    transform: scale(.95);
+    }
+    
+    .checkbox + .checklabel:after {
+    content: "👎";
+    }
+    
+    .checkbox:checked + .checklabel {
+    background: $primary;
+    transform: scale(1);
+    }
+    
+    .checkbox:checked + .checklabel:hover {
+    background: $secondary;
+    transform: scale(0.95);
+    }
+    
+    .checkbox:checked + .checklabel:after {
+    content: "👍";
+    }
+}
+
+select {
+    /* Reset Select */
+    appearance: none;
+    outline: 10px red;
+    border: 0;
+    box-shadow: none;
+    /* Personalize */
+    flex: 1;
+    padding: 0 1em;
+    color: #fff;
+    background-color: $gray;
+    background-image: none;
+    cursor: pointer;
+  }
+  /* Remove IE arrow */
+  select::-ms-expand {
+    display: none;
+  }
+  /* Custom Select wrapper */
+  .select {
+    position: relative;
+    display: flex;
+    width: 20em;
+    height: 3em;
+    border-radius: .25em;
+    overflow: hidden;
+  }
+  /* Arrow */
+  .select::after {
+    content: '\25BC';
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1em;
+    background-color: $gray;
+    transition: .25s all ease;
+    pointer-events: none;
+  }
+  /* Transition */
+  .select:hover::after {
+    color: $primary;
+  }
+
+.select-form{
+    width: 91%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    label{
+
+        font-size: 16px;
+        color: $gray;
+        margin-right: 10px;
+    }
+    
+}
+
+
+  
+
+
+
+
+
