@@ -24,7 +24,8 @@ export class UserInputsComponent {
     energyWater: new FormControl('', [Validators.required]),
     electricCar: new FormControl(false),
     floorHeating: new FormControl(false), 
-    insolation: new FormControl('')
+    insolation: new FormControl(''), 
+    kilometersCar: new FormControl()
   })
 
   submit(){

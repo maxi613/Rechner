@@ -1,9 +1,9 @@
 <form [formGroup]="house" (ngSubmit)="submit()" >
     <div class="house-form">
-        <h2>Hausangaben</h2> 
-        <div class="checkform">
+        <div class="titel">
+            <h2>Hausangaben</h2> 
             <mat-chip-option class="mat-chip" id="chip" [selected]="hasEnergyclass" (selectionChange)="checkEnergyclass()">Energieausweis vorhanden?</mat-chip-option>
-        </div> 
+        </div>
 
         @if(hasEnergyclass){
             <div class="form__group field">
@@ -38,6 +38,12 @@
                 <input class="checkbox" id="checkbox-car" type="checkbox" formControlName="electricCar"/>
                 <label class="checklabel" for="checkbox-car" ></label>
             </div>
+            @if (house.get('electricCar')?.value) {
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Fahrleistung [kM]" name="Fahrleistung" id='Fahrleistung' formControlName="kilometersCar" required />
+                    <label for="Fahrleistung" class="form__label">Fahrleistung [kM]</label>
+                </div>
+            }
             <div class="checkform">
                 <label>Fussbodenheizung:</label>
                 <input class="checkbox" id="checkbox-heating" type="checkbox" formControlName="floorHeating"/>
@@ -45,5 +51,9 @@
             </div>
 
     </div>
-    <button type="submit" class="login-in-submit"  > Sign In</button>
+    <div class="next-container">
+        <button type="submit" routerLink="/ResidentInputs">
+            <img src="assets/rechts.png">    
+        </button>
+    </div>
 </form>

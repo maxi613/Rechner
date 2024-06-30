@@ -9,12 +9,14 @@ import { UserInputsComponent } from './user-inputs/user-inputs.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSelectModule} from '@angular/material/select';
+import { ResidentInputsComponent } from './resident-inputs/resident-inputs.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    UserInputsComponent, 
+    UserInputsComponent,
+    ResidentInputsComponent, 
   ],
   imports: [
     MatSelectModule,

@@ -1,0 +1,26 @@
+<form [formGroup]="residents" (ngSubmit)="submit()" >
+    <div class="residents-form">
+        <div class="titel">
+            <h2>Bewohnerangaben</h2> 
+        </div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Anzahl Erwachsene" name="persons" id='persons' formControlName="numberOfPersons" required />
+                <label for="persons" class="form__label">Anzahl Erwachsene</label>
+            </div>
+            <div class="form-error" *ngIf="residents.get('numberOfPersons')?.errors && residents.get('numberOfPersons')?.touched">*Anzahl Erwachsene</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Anzahl Kinder" name="numberOfKids" id='numberOfKids' formControlName="numberOfKids" required />
+                <label for="numberOfKids" class="form__label">Anzahl Kinder</label>
+            </div>
+            <div class="form-error" *ngIf="residents.get('numberOfKids')?.errors && residents.get('numberOfKids')?.touched">*Anzahl Kinder fehlt</div>
+            <div class="checkform">
+                <label>Wir baden gerne:</label>
+                <input class="checkbox" id="isBathing" type="checkbox" formControlName="isBathing"/>
+                <label class="checklabel" for="isBathing" ></label>
+            </div>
+    </div>
+    <div class="next-container">
+        <button type="submit" routerLink="/HomeInputs" ><img src="assets/left.png"></button>
+        <button type="submit" routerLink="/ResidentInputs" ><img src="assets/rechts.png"></button>
+    </div>
+</form>
