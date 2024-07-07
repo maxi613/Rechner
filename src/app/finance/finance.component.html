@@ -1,0 +1,37 @@
+<form [formGroup]="finance" (ngSubmit)="submit()" >
+    <div class="fincance-form">
+        <div class="titel">
+            <h2>Finanzierungsangaben</h2> 
+        </div>
+        <div class="checkform">
+            <label>Externe Finanzierung:</label>
+            <input class="checkbox" id="externalFincance" type="checkbox" formControlName="externalFincance" (selectionchange)="externalFinance()"/>
+            <label class="checklabel" for="externalFincance" ></label>
+        </div>
+        @if (finance.get('externalFincance')?.value) {
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Zinssatz" name="zinssatz" id='zinssatz' formControlName="zinssatz" required />
+                <label for="zinssatz" class="form__label">Zinssatz:</label>
+            </div>
+            <div class="form-error" *ngIf="finance.get('zinssatz')?.errors && finance.get('zinssatz')?.touched">*Zinssatz fehlt</div>
+        }
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Stromkosten" name="energyCosts" id='energyCosts' formControlName="energyCosts" required />
+            <label for="energyCosts" class="form__label">Stromkosten:</label>
+        </div>
+        <div class="form-error" *ngIf="finance.get('energyCosts')?.errors && finance.get('energyCosts')?.touched">*Stromkosten fehlt</div>
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Stromkosten" name="vergütung" id='vergütung' formControlName="vergütung" required />
+            <label for="vergütung" class="form__label">Einspießevergütung:</label>
+        </div>
+        <div class="form-error" *ngIf="finance.get('vergütung')?.errors && finance.get('vergütung')?.touched">*Einspießevergütung fehlt</div>
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Stromkosten" name="costsPreviosHeating" id='costsPreviosHeating' formControlName="costsPreviosHeating" required />
+            <label for="costsPreviosHeating" class="form__label">Kosten des vorherigen Energieträgers:</label>
+        </div>
+        <div class="form-error" *ngIf="finance.get('costsPreviosHeating')?.errors && finance.get('costsPreviosHeating')?.touched">*Kosten des vorherigen Energieträgers fehlt</div>
+    </div>
+    <div class="next-container">
+        <button type="submit" routerLink="/HeatingpumpIntputs" ><img src="assets/left.png"></button>
+    </div>
+</form>

@@ -18,6 +18,7 @@ export class SuperbaseService {
   private superbaseClient: SupabaseClient; 
   private _currentUser: Subject<User | boolean> = new Subject();  
   private _session: BehaviorSubject<AuthSession| null | any> = new BehaviorSubject(null);
+  
   constructor() {
     this.superbaseClient = createClient(SuperbaseEnv.url, SuperbaseEnv.key); 
 

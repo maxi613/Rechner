@@ -14,7 +14,6 @@ export class ResidentInputsComponent {
     isBathing: new FormControl(false, [Validators.required]),
   })
 
-
   submit(){
     console.log(this.residents); 
   }

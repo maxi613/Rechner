@@ -20,14 +20,17 @@ export class AppComponent {
   ngOnInit(){
     
     this.superbaseService.currentUser.subscribe((user: User | boolean)=>{
+      console.log(user);
       if(  typeof user !=  "boolean"){
         this._user = user; 
         this.islogouted = false;
-        this.route.navigate(['/HomeInputs'])
+        this.route.navigate(['/HomeInputs']);
+        console.log('is logged in');
       }else{
         this._user = user;
         this.islogouted = true; 
-        this.route.navigate([''])
+        console.log('is logged out');
+        this.route.navigate(['/']);
       }
     })
   }

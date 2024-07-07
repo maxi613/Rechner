@@ -1,0 +1,61 @@
+<form [formGroup]="pvControl" (ngSubmit)="submit()" >
+    <div class="pv-form">
+        <div class="titel">
+            <h2>PV-Angaben</h2> 
+        </div>
+            <div class="checkform">
+                <label>PV vorhanden?</label>
+                <input class="checkbox" id="hasPV" type="checkbox" formControlName="hasPV"  (selectionchange) ="hasPV()" />
+                <label class="checklabel" for="hasPV" ></label>
+            </div>
+            @if (pvControl.get('hasPV')?.value) {
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Leistung [kWp]" name="power" id='power' formControlName="powerOfPV" required />
+                <label for="power" class="form__label">Leistung [kWp]</label>
+            </div>
+            <div class="form-error" *ngIf="pvControl.get('powerOfPV')?.errors && pvControl.get('powerOfPV')?.touched">*PV Leistung fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Investionskosten PV" name="costsOfPv" id='costsOfPv' formControlName="costsOfPv" required />
+                <label for="costsOfPv" class="form__label">Investionskosten PV</label>
+            </div>
+            <div class="form-error" *ngIf="pvControl.get('costsOfPv')?.errors && pvControl.get('costsOfPv')?.touched">*Investionskosten fehlen</div>
+            }
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Hausrichtung" name="directionOfHouse" id='directionOfHouse' formControlName="directionOfHouse" required />
+                <label for="costsOfPv" class="form__label">Hausrichtung [°]</label>
+            </div>
+            <div class="form-error" *ngIf="pvControl.get('directionOfHouse')?.errors && pvControl.get('directionOfHouse')?.touched">*Hausrichtung fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Hausrichtung" name="angleOfRoof" id='angleOfRoof' formControlName="angleOfRoof" required />
+                <label for="costsOfPv" class="form__label">Hausneigung [°]</label>
+            </div>
+            <div class="form-error" *ngIf="pvControl.get('angleOfRoof')?.errors && pvControl.get('angleOfRoof')?.touched">*Hausneigung fehlt</div>
+            <div class="checkform">
+                <label>Batterie vorhanden?</label>
+                <input class="checkbox" id="hasBattery" type="checkbox" formControlName="hasBattery" (selectionchange)="hasBattery()" />
+                <label class="checklabel" for="hasBattery" ></label>
+            </div>
+            @if (pvControl.get('hasBattery')?.value) {
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Leistung [kWp]" name="capacityBattery" id='capacityBattery' formControlName="capacityBattery" required />
+                    <label for="capacityBattery" class="form__label">Batterie Kapazität</label>
+                </div>
+                <div class="form-error" *ngIf="pvControl.get('capacityBattery')?.errors && pvControl.get('capacityBattery')?.touched">*Batterie Kapazität fehlt</div>
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Investionskosten Batterie" name="costsBattery" id='costsBattery' formControlName="costsBattery" required />
+                    <label for="costsBattery" class="form__label">Investionskosten Batterie</label>
+                </div>
+                <div class="form-error" *ngIf="pvControl.get('costsBattery')?.errors && pvControl.get('costsBattery')?.touched">*Investionskosten fehlen</div>
+            }@else {
+                <div class="checkform">
+                    <label>Batterie gewünscht?</label>
+                    <input class="checkbox" id="wantsBattery" type="checkbox" formControlName="wantsBattery" />
+                    <label class="checklabel" for="wantsBattery" ></label>
+                </div>
+            }
+    </div>
+    <div class="next-container">
+        <button type="submit" routerLink="/ResidentInputs" ><img src="assets/left.png"></button>
+        <button type="submit" routerLink="/HeatingpumpIntputs" ><img src="assets/rechts.png"></button>
+    </div>
+</form>

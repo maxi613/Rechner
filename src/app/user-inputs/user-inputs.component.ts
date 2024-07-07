@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormserviceService } from '../services/formservice/formservice.service';
 @Component({
   selector: 'app-user-inputs',
   templateUrl: './user-inputs.component.html',
@@ -7,8 +8,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class UserInputsComponent {
   public hasEnergyclass: boolean = false;
-  //floorheating
+  
+  private formservice = inject(FormserviceService); 
 
+  ngOnInit(){
+  }
   Insulations = [
     "KfW-Effizienzhaus 100",
     "KfW-Effizienzhaus 85",
@@ -18,18 +22,19 @@ export class UserInputsComponent {
   ]
 
   index: any; 
-  house = new FormGroup({
-    area: new FormControl('', [Validators.required]), 
-    energyHeating: new FormControl('', [Validators.required]),
-    energyWater: new FormControl('', [Validators.required]),
+  house: FormGroup  = new FormGroup({
+    area: new FormControl(0, [Validators.required]), 
+    energyHeating: new FormControl(0, [Validators.required]),
+    energyWater: new FormControl(0, [Validators.required]),
     electricCar: new FormControl(false),
     floorHeating: new FormControl(false), 
-    insolation: new FormControl(''), 
-    kilometersCar: new FormControl()
+    insolation: new FormControl(0), 
+    kilometersCar: new FormControl(0)
   })
 
   submit(){
-    console.log(this.house); 
+    console.log(this.house.value); 
+
   }
 
   checkEnergyclass(){

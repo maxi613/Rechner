@@ -1,0 +1,44 @@
+<form [formGroup]="heatingPump" (ngSubmit)="submit()" >
+    <div class="heating-form">
+        <div class="titel">
+            <h2>Wärmepumpe</h2> 
+        </div>
+        <div class="checkform">
+            <label>Besitze eine Wärmepumpe?</label>
+            <input class="checkbox" id="hasPump" type="checkbox" formControlName="hasPump" (selectionchange)="hasPump()"/>
+            <label class="checklabel" for="hasPump" ></label>
+        </div>
+        @if (heatingPump.get('hasPump')?.value) {
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Wärmepumpen Leistung [kW]" name="power" id='power' formControlName="power" required />
+                <label for="power" class="form__label">Wärmepumpen Leistung [kW]</label>
+            </div>
+            <div class="form-error" *ngIf="heatingPump.get('power')?.errors && heatingPump.get('power')?.touched">*Wärmepumpen Leistung fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Jahresarbeitszahl" name="performance" id='performance' formControlName="performance" required />
+                <label for="performance" class="form__label">Jahresarbeitszahl</label>
+            </div>
+            <div class="form-error" *ngIf="heatingPump.get('performance')?.errors && heatingPump.get('performance')?.touched">*Jahresarbeitszahl fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Investionskosten" name="costs" id='costs' formControlName="costs" required />
+                <label for="costs" class="form__label">Investionskosten</label>
+            </div>
+            <div class="form-error" *ngIf="heatingPump.get('costs')?.errors && heatingPump.get('costs')?.touched">*Jahresarbeitszahl fehlt</div>
+        }@else {
+            <div class="select-form">
+                <label>Art der Wärmepumpe: </label>
+                <div class="select">
+                    <select  formControlName="version">
+                        @for (pumps of heatingPumpts; track $index) {
+                        <option [value]="pumps">{{pumps}}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="next-container">
+        <button type="submit" routerLink="/PVInputs" ><img src="assets/left.png"></button>
+        <button type="submit" routerLink="/FinanceInputs" ><img src="assets/rechts.png"></button>
+    </div>
+</form>

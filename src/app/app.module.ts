@@ -10,13 +10,19 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSelectModule} from '@angular/material/select';
 import { ResidentInputsComponent } from './resident-inputs/resident-inputs.component';
+import { PvInputsComponent } from './pv-inputs/pv-inputs.component';
+import { HeatingpumpIntputsComponent } from './heatingpump-intputs/heatingpump-intputs.component';
+import { FinanceComponent } from './finance/finance.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     UserInputsComponent,
-    ResidentInputsComponent, 
+    ResidentInputsComponent,
+    PvInputsComponent,
+    HeatingpumpIntputsComponent,
+    FinanceComponent, 
   ],
   imports: [
     MatSelectModule,
