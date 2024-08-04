@@ -11,6 +11,7 @@ import {
 import { usage } from '../shared/models/usage.model';
 import { SuperbaseEnv, userLogin } from '../shared/environment';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Wärmepumpe } from '../shared/models/heatingpump';
 @Injectable({
   providedIn: 'root'
 })
@@ -79,4 +80,20 @@ export class SuperbaseService {
     return this.superbaseClient.auth.signOut(); 
   }
 
+  async getJazHeating(versionPump: Wärmepumpe, leistung: number, fbh : boolean){
+
+    if(versionPump == Wärmepumpe['Sole-Wasser mit Erdkollektor'] && fbh){
+      console.log(leistung);
+      const { data, error } = await this.superbaseClient
+      .from('jaz_sole')
+      .select('JAZmitFBHH').match({Wärmeleistung: leistung});
+      console.log(data); 
+      console.log(error);
+      //return { data, error }
+    }
+  }
+
+  getJazWater(){
+
+  }
 }

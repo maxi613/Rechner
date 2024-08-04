@@ -28,4 +28,9 @@ export class FinanceComponent {
   submit(){
     this.formservice.SetFinance = this.finance; 
   }
+
+  caculate(){
+    console.log('berechnen');
+    this.formservice.getJaz(); 
+  }
 }
