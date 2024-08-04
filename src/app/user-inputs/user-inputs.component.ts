@@ -11,8 +11,6 @@ export class UserInputsComponent {
   
   private formservice = inject(FormserviceService); 
 
-  ngOnInit(){
-  }
   Insulations = [
     "KfW-Effizienzhaus 100",
     "KfW-Effizienzhaus 85",
@@ -26,22 +24,27 @@ export class UserInputsComponent {
     area: new FormControl(0, [Validators.required]), 
     energyHeating: new FormControl(0, [Validators.required]),
     energyWater: new FormControl(0, [Validators.required]),
+    hasEnergyId: new FormControl(false),
     electricCar: new FormControl(false),
     floorHeating: new FormControl(false), 
     insolation: new FormControl(0), 
     kilometersCar: new FormControl(0)
   })
 
+  ngOnInit(){
+    this.house = this.formservice.Gethouse; 
+  }
   submit(){
-    console.log(this.house.value); 
-
+    this.formservice.SetHouse = this.house; 
   }
 
   checkEnergyclass(){
     if(!this.hasEnergyclass){
       this.hasEnergyclass=true; 
+      this.house.controls['hasEnergyId'].setValue(this.hasEnergyclass);
     }else{
       this.hasEnergyclass= false; 
+      this.house.controls['hasEnergyId'].setValue(this.hasEnergyclass);
     }
   }
 

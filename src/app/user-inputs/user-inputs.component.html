@@ -2,14 +2,10 @@
     <div class="house-form">
         <div class="titel">
             <h2>Hausangaben</h2> 
-            <mat-chip-option class="mat-chip" id="chip" [selected]="hasEnergyclass" (selectionChange)="checkEnergyclass()">Energieausweis vorhanden?</mat-chip-option>
+            <mat-chip-option class="mat-chip" id="chip" [selected]="hasEnergyclass" (selectionChange)="checkEnergyclass()" >Energieausweis vorhanden?</mat-chip-option>
         </div>
 
         @if(hasEnergyclass){
-            <div class="form__group field">
-                <input type="input" class="form__field" placeholder="Wohnfläche [m²]" name="area" id='area' formControlName="area" required />
-                <label for="area" class="form__label">Wohnfläche [m²]</label>
-            </div>
             <div class="form-error" *ngIf="house.get('area')?.errors && house.get('area')?.touched">*Wohnfläche fehlt</div>
             <div class="form__group field">
                 <input type="input" class="form__field" placeholder="Energieausweis" name="energyHeating" id='energyHeating' formControlName="energyHeating" required />
@@ -33,6 +29,10 @@
                     </div>
                 </div>
             }
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Wohnfläche [m²]" name="area" id='area' formControlName="area" required />
+                <label for="area" class="form__label">Wohnfläche [m²]</label>
+            </div>
             <div class="checkform">
                 <label>E-Auto:</label>
                 <input class="checkbox" id="checkbox-car" type="checkbox" formControlName="electricCar"/>

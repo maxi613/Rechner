@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
+import { FormserviceService } from '../services/formservice/formservice.service';
 @Component({
   selector: 'app-pv-inputs',
   templateUrl: './pv-inputs.component.html',
@@ -20,8 +20,13 @@ export class PvInputsComponent {
     wantsBattery: new FormControl(false, )
   });
 
+  private formservice = inject(FormserviceService); 
+
+  ngOnInit(){
+    this.pvControl = this.formservice.GetPV;
+  }
   submit(){
-    console.log(this.pvControl); 
+    this.formservice.SetPv = this.pvControl; 
   }
 
   hasPV(){

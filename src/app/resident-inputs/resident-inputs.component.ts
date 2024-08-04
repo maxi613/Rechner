@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormserviceService } from '../services/formservice/formservice.service';
 
 @Component({
   selector: 'app-resident-inputs',
@@ -9,12 +10,18 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class ResidentInputsComponent {
 
   residents = new FormGroup({
-    numberOfPersons: new FormControl('', [Validators.required]), 
-    numberOfKids: new FormControl('', [Validators.required]),
+    numberOfPersons: new FormControl(0, [Validators.required]), 
+    numberOfKids: new FormControl(0, [Validators.required]),
     isBathing: new FormControl(false, [Validators.required]),
   })
 
+  private formservice = inject(FormserviceService); 
+
+  ngOnInit(){
+    this.residents  = this.formservice.GetResidents; 
+  }
+
   submit(){
-    console.log(this.residents); 
+    this.formservice.SetResidents = this.residents; 
   }
 }

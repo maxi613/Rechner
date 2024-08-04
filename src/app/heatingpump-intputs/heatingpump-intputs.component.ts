@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-
+import { FormserviceService } from '../services/formservice/formservice.service';
 @Component({
   selector: 'app-heatingpump-intputs',
   templateUrl: './heatingpump-intputs.component.html',
@@ -16,13 +16,18 @@ export class HeatingpumpIntputsComponent {
     version: new FormControl('')
   });
 
+  private formservice = inject(FormserviceService); 
+
+  ngOnInit(){
+    this.heatingPump = this.formservice.GetHeatingpump; 
+  }
   heatingPumpts:string[] = [
     'Luft-Wasser',
     'Sole-Wasser mit Erdkollektor', 
     'Sole-Wasser mit Erdsonde'
   ]
   submit(){
-    console.log(this.heatingPump); 
+    this.formservice.SetHeatingpump = this.heatingPump; 
   }
 
   hasPump(){

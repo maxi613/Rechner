@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component , inject} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-
+import { FormserviceService } from '../services/formservice/formservice.service';
 @Component({
   selector: 'app-finance',
   templateUrl: './finance.component.html',
@@ -17,10 +17,15 @@ export class FinanceComponent {
 
   }); 
 
+  private formservice = inject(FormserviceService); 
+
+  ngOnInit(){
+    this.finance = this.formservice.GetFinance; 
+  }
   externalFinance(){
     this.finance.get('hasPump')?.value == true ?  this.finance.get('externalFincance')?.setValue(false) : this.finance.get('externalFincance')?.setValue(true);
   }
   submit(){
-    console.log(this.finance);
+    this.formservice.SetFinance = this.finance; 
   }
 }

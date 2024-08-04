@@ -32,6 +32,12 @@
         <div class="form-error" *ngIf="finance.get('costsPreviosHeating')?.errors && finance.get('costsPreviosHeating')?.touched">*Kosten des vorherigen Energieträgers fehlt</div>
     </div>
     <div class="next-container">
-        <button type="submit" routerLink="/HeatingpumpIntputs" ><img src="assets/left.png"></button>
+        <button type="button" routerLink="/HeatingpumpIntputs" ><img src="assets/left.png"></button>
+        <button type="submit">
+            Submit
+        </button>
+        <button type="button">
+            Berechnen
+        </button>
     </div>
 </form>
