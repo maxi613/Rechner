@@ -1,5 +1,5 @@
 export enum Wärmepumpe{
-    'Luft-Wasser' = 0,
-    'Sole-Wasser mit Erdkollektor' = 1, 
-    'Sole-Wasser mit Erdsonde' = 2
+    LuftWasser = 'Luft-Wasser',
+    SoleWassermitErdkollektor = 'Sole-Wasser mit Erdkollektor', 
+    SoleWassermitErdsonde = 'Sole-Wasser mit Erdsonde'
 }

@@ -6,6 +6,17 @@
         </div>
 
         @if(hasEnergyclass){
+            <div class="select-form">
+                <label>Energieklasse:</label>
+                <div class="select">
+                    <select  formControlName="energyClass">
+                        @for (energyClass of energyClasses; track $index) {
+                        <option [value]="energyClass">{{energyClass}}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        
             <div class="form-error" *ngIf="house.get('area')?.errors && house.get('area')?.touched">*Wohnfläche fehlt</div>
             <div class="form__group field">
                 <input type="input" class="form__field" placeholder="Energieausweis" name="energyHeating" id='energyHeating' formControlName="energyHeating" required />

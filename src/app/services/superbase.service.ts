@@ -12,6 +12,7 @@ import { usage } from '../shared/models/usage.model';
 import { SuperbaseEnv, userLogin } from '../shared/environment';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Wärmepumpe } from '../shared/models/heatingpump';
+import { energyClass, insolation } from '../shared/models/energyClass';
 @Injectable({
   providedIn: 'root'
 })
@@ -60,8 +61,7 @@ export class SuperbaseService {
     const { data, error } = await this.superbaseClient
     .from('Verbräuche')
     .select('*')
-
-    return { data, error }
+      return { data, error }
   }
 
   public signIn(email: string|null | undefined, pw: string|null | undefined,): Promise<AuthTokenResponse>| null{
@@ -80,20 +80,163 @@ export class SuperbaseService {
     return this.superbaseClient.auth.signOut(); 
   }
 
-  async getJazHeating(versionPump: Wärmepumpe, leistung: number, fbh : boolean){
+  async getJazHeatingErdkollektor(leistung: number, fbh : boolean | null): Promise<number|null| undefined>{
+    let  jazFBHH = await this.superbaseClient
+    .from('jaz_sole')
+    .select('JAZmitFBHH').gt('Wärmeleistung', leistung).limit(1).single(); 
 
-    if(versionPump == Wärmepumpe['Sole-Wasser mit Erdkollektor'] && fbh){
-      console.log(leistung);
-      const { data, error } = await this.superbaseClient
-      .from('jaz_sole')
-      .select('JAZmitFBHH').match({Wärmeleistung: leistung});
-      console.log(data); 
-      console.log(error);
-      //return { data, error }
+    let  jazOFBHH = await this.superbaseClient
+    .from('jaz_sole')
+    .select('JAZohneFBHH').gt('Wärmeleistung', leistung).limit(1).single(); 
+    if( jazFBHH.data != null && jazOFBHH.data != null){
+      return fbh ? Number( jazFBHH.data.JAZmitFBHH) : Number( jazOFBHH.data.JAZohneFBHH)
+    }else{
+      console.log(jazFBHH.error)
+      console.log(jazOFBHH.error)
+      return null;
     }
   }
 
-  getJazWater(){
+  async getJazWaterErdkollektor( leistung: number): Promise<number | null>{
+    console.log(`Abfrage Erdkollektor mit leistung: ${leistung}`);
+    let  jaz = await this.superbaseClient
+    .from('jaz_sole')
+    .select('JAZmitFBHWW').gt('Wärmeleistung', leistung).limit(1).single();
 
+    if(jaz.data != null){
+      return Number(jaz.data.JAZmitFBHWW);
+    }else{
+      console.log(jaz.error)
+      return null;
+    }
+  }
+
+  async getJazHeatingErdsonde(leistung: number, fbh : boolean | null): Promise<number|null| undefined>{
+    let  jazFBHH = await this.superbaseClient
+    .from('jaz_sole_sonde')
+    .select('JAZmitFBHH').gt('Wärmeleistung', leistung).limit(1).single();
+
+    let  jazOFBHH = await this.superbaseClient
+    .from('jaz_sole')
+    .select('JAZohneFBHH').gt('Wärmeleistung', leistung).limit(1).single();
+
+    if( jazFBHH.data != null && jazOFBHH.data != null){
+      return fbh ? Number( jazFBHH.data.JAZmitFBHH) : Number(jazOFBHH.data.JAZohneFBHH);
+    }else{
+      console.log(jazFBHH.error); 
+      console.log(jazOFBHH.error)
+      return null;
+    }
+  }
+
+  async getJazWaterErdsonde( leistung: number): Promise<number | null>{
+    let  jaz = await this.superbaseClient
+    .from('jaz_sole_sonde')
+    .select('JAZmitFBHWW').gt('Wärmeleistung', leistung).limit(1).single();
+
+    if(jaz.data != null){
+      return Number(jaz.data.JAZmitFBHWW);
+    }else{
+      console.log(jaz.error);
+      return null;
+    }
+  }
+
+  async getJazLuftHeating(leistung: number,energyClass: string, insolation: string, fbh: boolean, hasEnergy: boolean ): Promise<number | null>{
+    let Heizgrenztemperatur: number; 
+
+    if(hasEnergy){
+      Heizgrenztemperatur = this.getHeizgrenztemperatur(energyClass);
+    }else {
+      Heizgrenztemperatur = this.getHeizgrenztemperaturByInsolation(insolation); 
+    }
+    let jazFBHH = await this.superbaseClient.from('jaz_luft').select('JAZFBHH').eq('Heizgrenztemperatur', Heizgrenztemperatur).gt('Wärmeleistung', leistung).limit(1).single(); 
+    let jazOhneFBHH = await this.superbaseClient.from('jaz_luft').select('JAZohneFBHH').eq('Heizgrenztemperatur', Heizgrenztemperatur).gt('Wärmeleistung', leistung).limit(1).single();
+    if( jazFBHH.data != null && jazOhneFBHH.data != null){
+      return fbh ? Number( jazFBHH.data.JAZFBHH ): Number( jazOhneFBHH.data.JAZohneFBHH); 
+    }else{
+      console.log(jazFBHH.error)
+      console.log(jazOhneFBHH.error)
+      return null; 
+    }
+  }
+
+  
+  async getJazLuftWater(leistung: number,energyClass: string, insolation: string, hasEnergyClass: boolean): Promise<number | null>{
+    let Heizgrenztemperatur: number; 
+
+    if(hasEnergyClass){
+      Heizgrenztemperatur = this.getHeizgrenztemperatur(energyClass);
+    }else{
+      Heizgrenztemperatur = this.getHeizgrenztemperaturByInsolation(insolation);
+    } 
+
+    let JAZFBHWW = await this.superbaseClient.from('jaz_luft').select('JAZFBHWW').eq('Heizgrenztemperatur', Heizgrenztemperatur).gt('Wärmeleistung', leistung).limit(1).single();
+    if( JAZFBHWW.data != null ){
+      return JAZFBHWW.data.JAZFBHWW;
+    }else{
+      console.log(JAZFBHWW.error); 
+      return null; 
+    }
+  }
+  private getHeizgrenztemperatur(energyClass: string): number{
+
+    switch(energyClass){
+      case "A+":{
+        return 10;
+      }
+      case "A":{
+        return 10; 
+      }
+      case "B":{
+        return 10; 
+      }
+      case "C": {
+        return 12; 
+      }
+      case "D": {
+        return 12;
+      }
+      case "E" :{
+        return 12;
+      }
+      case "F":{
+        return 15;
+      }
+      case "G" :{
+        return 15; 
+      }
+      case "H":{
+        return 15;
+      } 
+      default:{
+        return 0;
+      }
+    }
+  }
+
+
+  private getHeizgrenztemperaturByInsolation(Insolation: string): number{
+    switch(Insolation){
+      case "KfW-Effizienzhaus 100":{
+        return 15;
+      }
+      case "KfW-Effizienzhaus 85":{
+        return 12;
+      }
+      case "KfW-Effizienzhaus 55":{
+        return 12; 
+      }
+      case "KfW-Effizienzhaus 40+":{
+        return 10;
+      }
+      case "Passivhaus":{
+        return 10;
+      } default:{
+        return 0; 
+      }
+    
+    }
   }
 }
+
