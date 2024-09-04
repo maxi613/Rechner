@@ -30,11 +30,8 @@ export class FinanceComponent {
   }
 
   caculate(){
-    console.log('berechnen'); 
-    this.formservice.StromverbrauchWasser().then((value)=>{
-      console.log(`StromverbrauchWasser: ${value}`);
+    this.formservice.caculateConsuptions().then((value)=>{
+      console.log(value); 
     })
-
-    this.formservice.stromverbrauchEfahrzeug(); 
   }
 }

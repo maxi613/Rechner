@@ -4,6 +4,7 @@ import {
   AuthSession,
   AuthTokenResponse,
   createClient,
+  PostgrestError,
   Session,
   SupabaseClient,
   User,
@@ -13,6 +14,7 @@ import { SuperbaseEnv, userLogin } from '../shared/environment';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Wärmepumpe } from '../shared/models/heatingpump';
 import { energyClass, insolation } from '../shared/models/energyClass';
+import { consuptions } from '../shared/models/consupzions';
 @Injectable({
   providedIn: 'root'
 })
@@ -98,7 +100,6 @@ export class SuperbaseService {
   }
 
   async getJazWaterErdkollektor( leistung: number): Promise<number | null>{
-    console.log(`Abfrage Erdkollektor mit leistung: ${leistung}`);
     let  jaz = await this.superbaseClient
     .from('jaz_sole')
     .select('JAZmitFBHWW').gt('Wärmeleistung', leistung).limit(1).single();
@@ -179,7 +180,30 @@ export class SuperbaseService {
       return null; 
     }
   }
-  private getHeizgrenztemperatur(energyClass: string): number{
+
+  public async getConsuptions():Promise<consuptions[] | null>{
+    let reps = await this.superbaseClient.from('Verbraeuche').select<any>('*').returns<consuptions[]>();
+    if(reps.error){
+      console.log(reps.error)
+      return null;
+    }else{
+      let datas  = reps.data; 
+      return datas; 
+    }
+  }
+
+  public async getPVNutzung(neigung: number, richtung: number): Promise<number| null>{
+    let resp = await this.superbaseClient.from('PVNutzung').select('Nutzung').eq('Richtung', richtung).eq('Neigung', neigung).limit(1).single();
+    if(resp.error){
+      console.log(resp.error)
+      return null;
+    }else{
+      let datas  = Number(resp.data.Nutzung); 
+      return datas; 
+    }
+  }
+
+  public getHeizgrenztemperatur(energyClass: string): number{
 
     switch(energyClass){
       case "A+":{
@@ -215,8 +239,7 @@ export class SuperbaseService {
     }
   }
 
-
-  private getHeizgrenztemperaturByInsolation(Insolation: string): number{
+  public getHeizgrenztemperaturByInsolation(Insolation: string): number{
     switch(Insolation){
       case "KfW-Effizienzhaus 100":{
         return 15;

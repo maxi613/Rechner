@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators
 import { SuperbaseService } from '../superbase.service';
 import { Wärmepumpe } from '../../shared/models/heatingpump';
 import { energyClass, insolation } from '../../shared/models/energyClass';
+import { consuptions, totalConsuptions } from '../../shared/models/consupzions';
 
 @Injectable({
   providedIn: 'root'
@@ -77,7 +78,6 @@ export class FormserviceService {
   });
 
   public set SetHouse(houseParams: FormGroup){
-    console.log(this._house);
     this._house = houseParams; 
   }
   public get Gethouse(): FormGroup{
@@ -230,7 +230,6 @@ export class FormserviceService {
 
       return this.getJazHeating().then(value => {
         jazHeating = value
-      
         // Überprüfe, ob die Werte gültig sind (nicht 0 oder undefined)
         if (jazHeating) {
           let verbrauch = this.Heizenergiebeadarf() /  Number(jazHeating.valueOf())
@@ -255,7 +254,6 @@ export class FormserviceService {
 
   public stromverbrauchEfahrzeug():number{
     let kilometer:number =Number(String( this._house.controls['kilometersCar'].value).replace(',','.')); 
-    console.log(kilometer*0.15); 
     return kilometer * 0.15;
   }
 
@@ -284,39 +282,64 @@ export class FormserviceService {
     }
   }
 
-  private getHeizgrenztemperatur(energyClass: string): number{
+  public async caculateConsuptions(): Promise<totalConsuptions[]>{
+    let resp = await this.supabaseService.getConsuptions();
+    let totalConsonsuptions: totalConsuptions[]= []; 
+    if(resp != null){
+      resp.forEach(async (value: consuptions, index: number)=>{
+        let stromverbrauchHeizen : number = await this.StromverbrauchHeizen() || 0;
+        let stromverbrauchWasser: number = await this.StromverbrauchWasser() || 0;
+        let verbrauchStrom = value.Strom *  this.Stromverbrauch(); 
+        let verbrauchEfahrzeug = value.EFahrzeug * this.stromverbrauchEfahrzeug(); 
+        let verbrauchWärme10 = value.Waerme9 * stromverbrauchHeizen; 
+        let verbrauchWärme12 = value.Waerme12 * stromverbrauchHeizen; 
+        let verbrauchWärme15 = value.Waerme15 * stromverbrauchHeizen; 
+        let verbrauchWasser = value.Warmwasser * stromverbrauchWasser; 
 
-    switch(energyClass){
-      case "A+":{
-        return 10;
-      }
-      case "A":{
-        return 10; 
-      }
-      case "B":{
-        return 10; 
-      }
-      case "C": {
-        return 12; 
-      }
-      case "D": {
-        return 12;
-      }
-      case "E" :{
-        return 12;
-      }
-      case "F":{
-        return 15;
-      }
-      case "G" :{
-        return 15; 
-      }
-      case "H":{
-        return 15;
-      } 
-      default:{
-        return 0;
-      }
+        let verbrauchGesamt =0;
+        let Heizgrenztemperatur: number = 0; 
+
+        if(this._house.controls['hasEnergyId'].value){
+          Heizgrenztemperatur = this.supabaseService.getHeizgrenztemperatur(this._house.controls['energyClass'].value);
+        }else{
+          Heizgrenztemperatur = this.supabaseService.getHeizgrenztemperaturByInsolation(this._house.controls['insolation'].value);
+        }
+
+        switch(Heizgrenztemperatur){
+          case 10:{
+            verbrauchGesamt =  verbrauchStrom + verbrauchEfahrzeug + verbrauchWärme10 + verbrauchWasser; 
+            break;
+          }
+          case 12:{
+            verbrauchGesamt =  verbrauchStrom + verbrauchEfahrzeug + verbrauchWärme12 + verbrauchWasser; 
+            break;
+          }
+          case 15:{
+            verbrauchGesamt = verbrauchStrom + verbrauchEfahrzeug + verbrauchWärme15 + verbrauchWasser; 
+            break;
+          }default:{
+            verbrauchGesamt = 0; 
+          }
+        };
+
+        totalConsonsuptions.push({
+          monat: value.Monat, 
+          consuptions: verbrauchGesamt
+        });
+
+      });
     }
+    return totalConsonsuptions;
   }
+  //Ab hier weiter machen
+  public async PVErtrag():Promise< number>{
+    let richtung: number = Number( this._pvControl.controls['directionOfHouse'].value?.replace(',', '.') )|| 0; 
+    let neigung: number = Number( this._pvControl.controls['angleOfRoof'].value?.replace(',', '.')) ||0 ; 
+    let pvNutzung= await this.supabaseService.getPVNutzung(neigung, richtung) || 0 ; 
+
+    const solarEinstrahlleistung: number = 1212.17; 
+    let ertrag = pvNutzung * solarEinstrahlleistung; 
+    return  0;
+  }
+
 }
