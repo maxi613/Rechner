@@ -38,7 +38,7 @@
             @if (pvControl.get('hasBattery')?.value) {
                 <div class="form__group field">
                     <input type="input" class="form__field" placeholder="Leistung [kWp]" name="capacityBattery" id='capacityBattery' formControlName="capacityBattery" required />
-                    <label for="capacityBattery" class="form__label">Batterie Kapazität</label>
+                    <label for="capacityBattery" class="form__label">Batterie Kapazität [kWh]</label>
                 </div>
                 <div class="form-error" *ngIf="pvControl.get('capacityBattery')?.errors && pvControl.get('capacityBattery')?.touched">*Batterie Kapazität fehlt</div>
                 <div class="form__group field">

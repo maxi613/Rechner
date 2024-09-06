@@ -9,12 +9,13 @@ import {
   SupabaseClient,
   User,
 } from '@supabase/supabase-js'
-import { usage } from '../shared/models/usage.model';
 import { SuperbaseEnv, userLogin } from '../shared/environment';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Wärmepumpe } from '../shared/models/heatingpump';
 import { energyClass, insolation } from '../shared/models/energyClass';
-import { consuptions } from '../shared/models/consupzions';
+import { consuptions } from '../shared/models/consuptions';
+import { nutzungsAufteilung } from '../shared/models/nutzungsaufteilung';
+import { BatterieGroesse } from '../shared/models/batterie';
 @Injectable({
   providedIn: 'root'
 })
@@ -203,6 +204,30 @@ export class SuperbaseService {
     }
   }
 
+  public async getNutzungsAufteilung(zeitraum: string): Promise<nutzungsAufteilung|  null>{
+    let resp = await this.superbaseClient.from('Nutzungsaufteilung').select('*').eq('Zeitraum', zeitraum).returns<nutzungsAufteilung>(); 
+    if(resp.error){
+      console.log(resp.error)
+      return null;
+    }else{
+      let datas  = resp.data; 
+      return datas; 
+    }
+  }
+
+  public async batterieGröße(größe: number, verbrauch: number): Promise<number|null>{
+    let resp = await this.superbaseClient.from('Batterie').select(verbrauch.toString()).gt('GroeßePV', größe).limit(1).returns<number>();  
+
+    if(resp.error){
+      console.log(resp.error)
+      return null;
+    }else{ 
+      let datas  = resp.data; 
+      return datas; 
+    }
+  }
+
+  
   public getHeizgrenztemperatur(energyClass: string): number{
 
     switch(energyClass){

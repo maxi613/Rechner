@@ -1,6 +1,7 @@
 import { Component , inject} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FormserviceService } from '../services/formservice/formservice.service';
+import { SuperbaseService } from '../services/superbase.service';
 @Component({
   selector: 'app-finance',
   templateUrl: './finance.component.html',
@@ -18,7 +19,7 @@ export class FinanceComponent {
   }); 
 
   private formservice = inject(FormserviceService); 
-
+  private superbase = inject(SuperbaseService); 
   ngOnInit(){
     this.finance = this.formservice.GetFinance; 
   }
@@ -31,7 +32,7 @@ export class FinanceComponent {
 
   caculate(){
     this.formservice.caculateConsuptions().then((value)=>{
-      console.log(value); 
-    })
+      //console.log(value); 
+    });
   }
 }

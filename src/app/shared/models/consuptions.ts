@@ -17,3 +17,10 @@ export interface consuptions {
     monat: string; 
     consuptions: number; 
   }
+
+  export interface IStromertrag{
+    monat: string; 
+    ertrag: number; 
+  }
+
+  
