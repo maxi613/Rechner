@@ -9,13 +9,13 @@ import {
   SupabaseClient,
   User,
 } from '@supabase/supabase-js'
-import { SuperbaseEnv, userLogin } from '../shared/environment';
+import { SuperbaseEnv, userLogin } from '../../shared/environment';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Wärmepumpe } from '../shared/models/heatingpump';
-import { energyClass, insolation } from '../shared/models/energyClass';
-import { consuptions } from '../shared/models/consuptions';
-import { nutzungsAufteilung } from '../shared/models/nutzungsaufteilung';
-import { BatterieGroesse } from '../shared/models/batterie';
+import { Wärmepumpe } from '../../shared/models/heatingpump';
+import { energyClass, insolation } from '../../shared/models/energyClass';
+import { consuptions } from '../../shared/models/consuptions';
+import { nutzungsAufteilung } from '../../shared/models/nutzungsaufteilung';
+import { BatterieGroesse } from '../../shared/models/batterie';
 @Injectable({
   providedIn: 'root'
 })
@@ -194,28 +194,41 @@ export class SuperbaseService {
   }
 
   public async getPVNutzung(neigung: number, richtung: number): Promise<number| null>{
-    let resp = await this.superbaseClient.from('PVNutzung').select('Nutzung').eq('Richtung', richtung).eq('Neigung', neigung).limit(1).single();
+    console.log('Abfrage PV Nutzung:'); 
+    console.log(`Richtung: ${richtung}`); 
+    console.log(`Neigung: ${neigung}`); 
+    if(neigung> 80){
+      neigung = 80; 
+    }
+    if(richtung > 80){
+      richtung = 80;
+    }
+    let resp = await this.superbaseClient.from('PVNutzung').select('Nutzung').gt('Richtung', richtung).gt('Neigung', neigung).limit(1).single();
     if(resp.error){
       console.log(resp.error)
       return null;
     }else{
       let datas  = Number(resp.data.Nutzung); 
+      console.log(`Response: ${datas}`)
       return datas; 
     }
   }
 
   public async getNutzungsAufteilung(zeitraum: string): Promise<nutzungsAufteilung|  null>{
+    console.log(`Abfrage Nutzungsaufteilung mit input: ${zeitraum}`)
     let resp = await this.superbaseClient.from('Nutzungsaufteilung').select('*').eq('Zeitraum', zeitraum).returns<nutzungsAufteilung>(); 
     if(resp.error){
       console.log(resp.error)
       return null;
     }else{
       let datas  = resp.data; 
+      console.log(datas)
       return datas; 
     }
   }
 
   public async batterieGröße(größe: number, verbrauch: number): Promise<number|null>{
+    console.log(`Abfrage Batteriegröße mit input: ${größe} und verbrauch: ${verbrauch}`); 
     let resp = await this.superbaseClient.from('Batterie').select(verbrauch.toString()).gt('GroeßePV', größe).limit(1).returns<number>();  
 
     if(resp.error){

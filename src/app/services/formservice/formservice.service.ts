@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators
  } from '@angular/forms';
-import { SuperbaseService } from '../superbase.service';
+import { SuperbaseService } from '../supabaseservice/superbase.service';
 import { Wärmepumpe } from '../../shared/models/heatingpump';
 import { energyClass, insolation } from '../../shared/models/energyClass';
 import { consuptions, IStromertrag, totalConsuptions } from '../../shared/models/consuptions';
@@ -49,7 +49,7 @@ export class FormserviceService {
     energyCosts: new FormControl(''),
     vergütung: new FormControl(''), 
     costsPreviosHeating: new FormControl(''),  
-
+    laufzeit: new FormControl('')
   }); 
 
   _heatingPump = new FormGroup({
@@ -118,7 +118,7 @@ export class FormserviceService {
     this._pvControl = PvParams;
   }
 
-  public async getJazHeating():Promise< number | null | undefined>{
+  private async getJazHeating():Promise< number | null | undefined>{
     if(!this._heatingPump.controls['hasPump'].value){
       let pump = this._heatingPump.controls['version'].value ?? '';
 
@@ -152,7 +152,7 @@ export class FormserviceService {
     }
   }
 
-  public async  getJazWater(): Promise< number | null | undefined>{
+  private async  getJazWater(): Promise< number | null | undefined>{
     if(!this._heatingPump.controls['hasPump'].value){
       let pump = this._heatingPump.controls['version'].value ?? '';
 
@@ -190,7 +190,7 @@ export class FormserviceService {
     return (this.WasserEnergiebeadarf() + this.Heizenergiebeadarf())/2100; 
   }
 
-  public StromverbrauchWasser(): Promise<number | void | null>{
+  private StromverbrauchWasser(): Promise<number | void | null>{
     if(this._heatingPump.controls['hasPump'].value){
       let stromverbrauch:number =  this.WasserEnergiebeadarf()/ Number(this._heatingPump.controls['performance'].value?.replace(',','.')); 
 
@@ -219,7 +219,7 @@ export class FormserviceService {
     }
   }
 
-  public StromverbrauchHeizen(): Promise<number | void | null>{
+  private StromverbrauchHeizen(): Promise<number | void | null>{
     if(this._heatingPump.controls['hasPump'].value){
       let stromverbrauch:number =  this.Heizenergiebeadarf()/ Number(this._heatingPump.controls['performance'].value?.replace(',','.')); 
 
@@ -247,14 +247,14 @@ export class FormserviceService {
     }
   }
 
-  public Stromverbrauch():number{
+  private Stromverbrauch():number{
     let numberOfPersons: number  = this._residents.controls['numberOfPersons'].value || 0; 
     let numberOfKids: number = this._residents.controls['numberOfKids'].value || 0;
 
     return numberOfPersons*1234+numberOfKids*617;
   }
 
-  public stromverbrauchEfahrzeug():number{
+  private stromverbrauchEfahrzeug():number{
     let kilometer:number =Number(String( this._house.controls['kilometersCar'].value).replace(',','.')); 
     return kilometer * 0.15;
   }
@@ -284,7 +284,7 @@ export class FormserviceService {
     }
   }
 
-  public async caculateConsuptions(): Promise<totalConsuptions[]>{
+  private async caculateConsuptions(): Promise<totalConsuptions[]>{
     let resp = await this.supabaseService.getConsuptions();
     let totalConsonsuptions: totalConsuptions[]= []; 
     if(resp != null){
@@ -331,6 +331,8 @@ export class FormserviceService {
 
       });
     }
+    console.log('Verbrauch total'); 
+    console.log(totalConsonsuptions); 
     return totalConsonsuptions;
   }
   
@@ -343,6 +345,7 @@ export class FormserviceService {
     const solarEinstrahlleistung: number = 1212.17; 
     if(this._pvControl.controls['hasPV'].value){
       let ertrag = pvNutzung * solarEinstrahlleistung * powerPv; 
+      console.log(`PV Ertrag: ${ertrag}`); 
       return ertrag;
     }else{
       let verbrauchProJahr = await this.caculateConsuptions();
@@ -350,32 +353,32 @@ export class FormserviceService {
       verbrauchProJahr.forEach((verbrauch: totalConsuptions)=>{
         verbrauchJahr = verbrauchJahr + verbrauch.consuptions; 
       }); 
+      console.log(`Kummolierter verbrauch: ${verbrauchJahr}`); 
       let ertrag = pvNutzung * solarEinstrahlleistung * verbrauchJahr * 0.001; 
+      console.log(`PV Ertrag: ${ertrag}`); 
       return ertrag; 
     }
   }
 
-  public async PVPerformance(): Promise< number>{
-    let richtung: number = Number( this._pvControl.controls['directionOfHouse'].value?.replace(',', '.') )|| 0; 
-    let neigung: number = Number( this._pvControl.controls['angleOfRoof'].value?.replace(',', '.')) ||0 ; 
+  private async PVPerformance(): Promise< number>{
+
     let powerPv: number = Number ( this._pvControl.controls['powerOfPV'].value) || 0
-    let pvNutzung = await this.supabaseService.getPVNutzung(neigung, richtung) || 0 ; 
 
     if(this._pvControl.controls['hasPV'].value){
-      let ertrag =  powerPv; 
-      return ertrag;
+      console.log(`PV performance: ${powerPv}`); 
+      return powerPv;
     }else{
       let verbrauchProJahr = await this.caculateConsuptions();
       let verbrauchJahr: number = 0; 
       verbrauchProJahr.forEach((verbrauch: totalConsuptions)=>{
         verbrauchJahr = verbrauchJahr + verbrauch.consuptions; 
       }); 
-      let ertrag = pvNutzung*  0.001; 
-      return ertrag; 
+      console.log(`PV performance: ${verbrauchJahr*0.001 }`); 
+      return verbrauchJahr*0.001; 
     }
   }
 
-  public async StromertragProMonat():Promise< IStromertrag[]>{
+  private async StromertragProMonat():Promise< IStromertrag[]>{
     let consuptions: consuptions[] | null = await this.supabaseService.getConsuptions();
     let stromertragProMonat: IStromertrag[] =[]; 
     consuptions?.forEach(async (consuptions)=>{
@@ -385,6 +388,8 @@ export class FormserviceService {
           ertrag: pvErtrag * consuptions.Stromertrag
         });
     });
+    console.log(`Stromertrag pro monat:`); 
+    console.log(stromertragProMonat);
     return stromertragProMonat;
   }
 
@@ -418,11 +423,12 @@ export class FormserviceService {
           }
       })
     }
-
+    console.log(`Überproduktion pro monat:`); 
+    console.log(überProduktionProMonat);
     return überProduktionProMonat; 
   }
 
-  public async bezug618(){
+  private async bezug618(){
     let überproduktion = await this.überProduktion('6-18'); 
     let bezugProMonat: bezugProMonat[] = []
     überproduktion.forEach((value)=>{
@@ -438,11 +444,12 @@ export class FormserviceService {
         })
       }
     }) 
-
+    console.log(`Bezug 6-18 pro monat:`); 
+    console.log(bezugProMonat);
     return bezugProMonat;
   }
 
-  public async bezug186(){
+  private async bezug186(){
     let überproduktion = await this.überProduktion('18-6'); 
     let bezugProMonat: bezugProMonat[] = []
     überproduktion.forEach((value)=>{
@@ -453,7 +460,8 @@ export class FormserviceService {
         })
       }
     }) 
-
+    console.log(`Bezug 18-6 pro monat:`); 
+    console.log(bezugProMonat);
     return bezugProMonat;
   }
 
@@ -487,11 +495,13 @@ export class FormserviceService {
         value: batteriegröße * this.daysInMonth(i)
       })
     }
+    console.log(`Batteriekapazität pro monat:`); 
+    console.log(capacityPerMonth);
     return capacityPerMonth; 
   }
 
 
-  public async SpeicherNutzungMax():Promise<SpeicherNutzungMax[]>{
+  private async SpeicherNutzungMax():Promise<SpeicherNutzungMax[]>{
     let überProduktion618 = await this.überProduktion('6-18'); 
     let batterycapacity = await this.calulateBatteriegröße(); 
     let SpeicherNutzungMax: SpeicherNutzungMax[] = []
@@ -517,10 +527,12 @@ export class FormserviceService {
         }
       }
     }); 
+    console.log(`Speichernutzung Max pro monat:`); 
+    console.log(SpeicherNutzungMax);
     return SpeicherNutzungMax;
   }
 
-  public async SpeicherNutzungNormal():Promise< SpeicherNutzungNormal[]>{
+  private async SpeicherNutzungNormal():Promise< SpeicherNutzungNormal[]>{
     let überProduktion186 = await this.überProduktion('18-6'); 
     let speicherNutzungMax =await this.SpeicherNutzungMax();
     let speichernutzungNormal: SpeicherNutzungNormal[] = []; 
@@ -539,11 +551,12 @@ export class FormserviceService {
         });
       }
     })
-
+    console.log(`Speichernutzung Normal pro monat:`); 
+    console.log(speichernutzungNormal);
     return speichernutzungNormal;
   }
 
-  public async SpeicherUngenutzt():Promise< SpeicherUngenutzt[]>{
+  private async SpeicherUngenutzt():Promise< SpeicherUngenutzt[]>{
     let speichermax = await this.SpeicherNutzungMax(); 
     let speicherNormal = await this.SpeicherNutzungNormal(); 
     let speicherUngenutzt: SpeicherUngenutzt[] = [];
@@ -553,11 +566,12 @@ export class FormserviceService {
         value: (speichermax[index].value -  value.value)
       })
     })
-
+    console.log(`Speichernutzung ungenutzt pro monat:`); 
+    console.log(speicherUngenutzt);
     return speicherUngenutzt;
   }
 
-  public async Einspeißung618(): Promise<Einspeißung618[]>{
+  private async Einspeißung618(): Promise<Einspeißung618[]>{
     let Einspeißung618: Einspeißung618[] = [];
     let überproduktion618 = await this.überProduktion('6-18'); 
     let speicherNutzungMax =await  this.SpeicherNutzungMax(); 
@@ -570,21 +584,23 @@ export class FormserviceService {
         Einspeißung618.push({value: (value.value+speicherUngenutzt[index].value)-speicherNutzungMax[index].value, monat: value.monat})
       }
     });
-
+    console.log(`Einspeißung ungenutzt pro monat:`); 
+    console.log(Einspeißung618);
     return Einspeißung618;
   }
 
-  public async einnahmenEinspeißung(): Promise<number>{
+  private async einnahmenEinspeißung(): Promise<number>{
     let einspeißung = await this.Einspeißung618(); 
     let einnahmen: number = 0; 
     let vergütungTemp: string =  this._finance.controls['vergütung'].value;
     einspeißung.forEach((value)=>{
       einnahmen = einnahmen + value.value *  Number(vergütungTemp.replace(',', '.'));
     })
+    console.log(`Einahmen Einspeißung: ${einnahmen}`)
     return einnahmen; 
   }
 
-  public async bezugGesamt(): Promise<BezugProMonat[]>{
+  private async bezugGesamt(): Promise<BezugProMonat[]>{
     let bezug: BezugProMonat[] = []
     let speichernutzungNormal = await this.SpeicherNutzungNormal(); 
     let bezug186 = await this.bezug186(); 
@@ -596,40 +612,194 @@ export class FormserviceService {
         value: value.value + bezug186[index].value + bezug618[index].value
       })
     });
-
+    console.log(`Bezug pro monat:`); 
+    console.log(bezug);
     return bezug; 
   }
 
-  public async Stromkosten(): Promise<number>{
+  private async Stromkosten(): Promise<number>{
     let costs:string = this._finance.controls['energyCosts'].value
     let bezugProMonat = await this.bezugGesamt();
     let stromkosten: number = 0;
     bezugProMonat.forEach(value=>{
       stromkosten = stromkosten + value.value * Number( costs.replace(',','.'));
     }); 
+    console.log(`Stromkosten: ${stromkosten}`);
     return stromkosten;
   }
 
-  public async EinsparungJährlich(){
+  private async EinsparungJährlich(){
     let stromverbrauch = this.Stromverbrauch(); 
     let stromverbrauchEfahr = this.stromverbrauchEfahrzeug(); 
     let costs:string = this._finance.controls['energyCosts'].value
     let costsPrevois: string = this._finance.controls['costsPreviosHeating'].value; 
-
+    console.log(`Einsparung jährlich: ${(stromverbrauch + stromverbrauchEfahr *0.7)* Number(costs.replace(',','.')) +Number( costsPrevois.replace(',', '.'))}`);
     return (stromverbrauch + stromverbrauchEfahr *0.7)* Number(costs.replace(',','.')) +Number( costsPrevois.replace(',', '.')); 
 
   }
 
-  public async GuV(){
+  private async GuV(){
     let einsparung = await this.EinsparungJährlich(); 
     let einnahmen = await this.einnahmenEinspeißung(); 
     let stromkosten = await this.Stromkosten(); 
-
+    console.log(`GuV: ${einsparung+einnahmen + stromkosten}`);
     return einsparung+einnahmen + stromkosten;
   }
 
   public async amortisationZeit(){
+    const wartungÖl = 200;
+    const wartungPV = 25; 
+    const wartungPumpe = 300; 
+    let Zinskosten= await this.zinskosten();
+    let k_erspanis: number = await this.GuV() + wartungÖl; 
+    let k_em: number = wartungPV +wartungPumpe + Zinskosten; 
+    let k_a = k_erspanis - k_em; 
+    return await this.invenstitionsKosten() / k_a
+  }
 
+  private async zinskosten(){
+    if(this._finance.controls['externalFincance'].value){
+      let rate:string = this._finance.controls['zinssatz'].value
+      let kumzinsz = this.kumzinsz(Number(rate.replace(',', '.'))/12, Number(this._finance.controls['laufzeit'].value.replace(',','.'))*12, await this.invenstitionsKosten(), 1,Number(this._finance.controls['laufzeit'].value.replace(',','.'))*12,0); 
+      return kumzinsz/Number(this._finance.controls['laufzeit'].value.replace(',','.')); 
+
+    }else{
+      return 0; 
+    }
+  }
+
+  private kumzinsz(rate: number, nper: number, pv: number, startPeriod: number, endPeriod: number, type: number): number{
+    let interest = 0;
+
+    // Iteriere durch die Perioden vom Start- bis zum Endzeitpunkt
+    for (let period = startPeriod; period <= endPeriod; period++) {
+        let paymentPeriod: number;
+
+        // Wenn der Typ 0 ist (Zahlung am Ende der Periode)
+        if (type === 0) {
+            paymentPeriod = period - 1;
+        }
+        // Wenn der Typ 1 ist (Zahlung zu Beginn der Periode)
+        else if (type === 1) {
+            paymentPeriod = period;
+        } else {
+            throw new Error("Der Typ muss entweder 0 oder 1 sein.");
+        }
+
+        // Berechne den kumulierten Zins für die aktuelle Periode
+        let interestForPeriod = (pv * Math.pow(1 + rate, paymentPeriod) * rate);
+        interest += interestForPeriod;
+    }
+
+    return interest;
+  }
+
+  public async invenstitionsKosten(){
+    return await this.pvKosten() + await this.pumpenKosten() + await this.kostenBaterrieSpeicher(); 
+  }
+
+  private async pvKosten(){
+    if(this._pvControl.controls['hasPV'].value){
+      return Number(this._pvControl.controls['costsOfPv'].value?.replace(',', '.'));
+    }else{
+      return await this.PVPerformance() *1300;
+    }
+  }
+
+  private async pumpenKosten(){
+    if(this._heatingPump.controls['hasPump'].value){
+      return Number(this._heatingPump.controls['costs'].value?.replace(',', '.'));
+    }else{
+
+      let pump = this._heatingPump.controls['version'].value ?? '';
+      let pumpenLeistung = this.LeistungsgrößeWärmepumpe();
+      if (pump == Wärmepumpe.SoleWassermitErdkollektor){
+        if(pumpenLeistung <= 5){
+          return 15000;
+        }
+
+        if( pumpenLeistung >5 && pumpenLeistung <= 10){
+          return  21500; 
+        }
+
+        if(pumpenLeistung> 10 && pumpenLeistung <= 15){
+          return 30000;
+        }
+
+        if(pumpenLeistung > 15){
+          return 40000;
+        }else{
+          return 0; 
+        }
+      }
+
+      if (pump == Wärmepumpe.SoleWassermitErdsonde){
+        if(pumpenLeistung <= 5){
+          return 17500;
+        }
+
+        if( pumpenLeistung >5 && pumpenLeistung <= 10){
+          return  25000; 
+        }
+
+        if(pumpenLeistung> 10 && pumpenLeistung <= 15){
+          return 35000;
+        }
+
+        if(pumpenLeistung > 15){
+          return 45000;
+        }else{
+          return 0; 
+        }
+      }
+
+      if (pump == Wärmepumpe.LuftWasser){
+        if(pumpenLeistung <= 5){
+          return 8500;
+        }
+
+        if( pumpenLeistung >5 && pumpenLeistung <= 10){
+          return  11500;
+        }
+
+        if(pumpenLeistung> 10 && pumpenLeistung <= 15){
+          return 14500;
+        }
+
+        if(pumpenLeistung > 15){
+          return 18000;
+        }else{
+          return 0;
+        }
+      }else{
+        return 0;
+      }
+    }
+  }
+
+  private async kostenBaterrieSpeicher(){
+    if(this._pvControl.controls['hasBattery']){
+      return Number(this._pvControl.controls['costsBattery'].value?.replace(',','.'));
+    }else{
+      let pvPerformance = await this.PVPerformance(); 
+      let verbrauchProJahr = await this.caculateConsuptions(); 
+      let verbrauchJahr: number = 0; 
+      verbrauchProJahr.forEach((verbrauch: totalConsuptions)=>{
+        verbrauchJahr = verbrauchJahr + verbrauch.consuptions; 
+      }); 
+
+      let verbrauchJahrtemp =Math.ceil( verbrauchJahr/1000)*1000;
+      if(verbrauchJahrtemp>8000){
+        verbrauchJahrtemp = 8000;
+      }
+      if(pvPerformance> 9.9){
+        pvPerformance = 9.9;
+      }
+
+      let batteriegröße = await this.supabaseService.batterieGröße(pvPerformance, verbrauchJahrtemp) || 0; 
+      console.log(`Kostenbatteriespeicher: ${batteriegröße *1400}`); 
+      return batteriegröße *1400;
+    }
   }
 
   public async autarkieGrad(){
@@ -648,12 +818,12 @@ export class FormserviceService {
     bezugGesamt.forEach(value=>{
       bezugJährlich = bezugJährlich + value.value; 
     }); 
-
+    console.log(`Autarkiegrad: ${(stromertragJährlich - einspeißungJärhlich)/(stromertragJährlich - einspeißungJärhlich+ Math.abs(bezugJährlich))}`);
     return (stromertragJährlich - einspeißungJärhlich)/(stromertragJährlich - einspeißungJärhlich+ Math.abs(bezugJährlich)); 
     
   }
 
-  public async eingenVerbrauchsanteil(){
+  public async eingenVerbrauchsanteil(): Promise< number>{
     let stromertrag = await this.StromertragProMonat(); 
     let einspeißung = await this.Einspeißung618();
     let pvPerfamnce = await this.PVPerformance();
@@ -667,10 +837,11 @@ export class FormserviceService {
     }); 
 
     if(pvPerfamnce>0){
+      console.log(`Eigenverbrauchsanteil: ${(stromertragJährlich-einspeißungJärhlich)/stromertragJährlich}`); 
       return (stromertragJährlich-einspeißungJärhlich)/stromertragJährlich;
     }else{
       return 0;
-    }
+    } 
   }
 
   private daysInMonth (month: any) {

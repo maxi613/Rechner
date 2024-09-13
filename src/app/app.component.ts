@@ -1,5 +1,5 @@
 import { Component, inject, Inject } from '@angular/core';
-import { SuperbaseService } from './services/superbase.service';
+import { SuperbaseService } from './services/supabaseservice/superbase.service';
 import { usage } from './shared/models/usage.model';
 import { LoginComponent } from './login/login.component';
 import { AuthSession, User } from '@supabase/supabase-js';

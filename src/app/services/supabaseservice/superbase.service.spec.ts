@@ -13,4 +13,8 @@ describe('SuperbaseService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  it('Expected',()=>{
+    expectAsync(service.getConsuptions());
+  })
 });

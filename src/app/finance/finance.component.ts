@@ -1,7 +1,7 @@
 import { Component , inject} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FormserviceService } from '../services/formservice/formservice.service';
-import { SuperbaseService } from '../services/superbase.service';
+import { SuperbaseService } from '../services/supabaseservice/superbase.service';
 @Component({
   selector: 'app-finance',
   templateUrl: './finance.component.html',
@@ -15,7 +15,7 @@ export class FinanceComponent {
     energyCosts: new FormControl(''),
     vergütung: new FormControl(''), 
     costsPreviosHeating: new FormControl(''),  
-
+    laufzeit: new FormControl('')
   }); 
 
   private formservice = inject(FormserviceService); 
@@ -31,8 +31,22 @@ export class FinanceComponent {
   }
 
   caculate(){
-    this.formservice.caculateConsuptions().then((value)=>{
-      //console.log(value); 
-    });
+   /* Promise.all([this.formservice.autarkieGrad(), this.formservice.amortisationZeit(), this.formservice.eingenVerbrauchsanteil(), this.formservice.invenstitionsKosten() ]).then(([
+      autarkeiGrad,
+      armortisationsZeit, 
+      eigenverbrauchsanteil, 
+      investitionskosten
+    ])=>{
+      console.log(`Autarkiegrad: ${autarkeiGrad}`); 
+      console.log(`armortisationszeit: ${armortisationsZeit}`); 
+      console.log(`Eigenverbrauchsanteil: ${eigenverbrauchsanteil}`); 
+      console.log(`Investitionskosten: ${investitionskosten}`); 
+    }); */
+    /*this.formservice.autarkieGrad().then(value=>{
+      console.log(`Autarkiegrad: ${value}`); 
+    });*/
+    this.formservice.PVErtrag().then(value=>{
+      console.log(`PV ertrag: ${value}`); 
+    })
   }
 }
