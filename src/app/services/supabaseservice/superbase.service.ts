@@ -203,7 +203,7 @@ export class SuperbaseService {
     if(richtung > 80){
       richtung = 80;
     }
-    let resp = await this.superbaseClient.from('PVNutzung').select('Nutzung').gt('Richtung', richtung).gt('Neigung', neigung).limit(1).single();
+    let resp = await this.superbaseClient.from('PVNutzung').select('Nutzung').gte('Richtung', richtung).gte('Neigung', neigung).limit(1).single();
     if(resp.error){
       console.log(resp.error)
       return null;
@@ -216,27 +216,26 @@ export class SuperbaseService {
 
   public async getNutzungsAufteilung(zeitraum: string): Promise<nutzungsAufteilung|  null>{
     console.log(`Abfrage Nutzungsaufteilung mit input: ${zeitraum}`)
-    let resp = await this.superbaseClient.from('Nutzungsaufteilung').select('*').eq('Zeitraum', zeitraum).returns<nutzungsAufteilung>(); 
+    let resp = await this.superbaseClient.from('Nutzungsaufteilung').select('*').eq('Zeitraum', zeitraum).returns<nutzungsAufteilung[]>(); 
     if(resp.error){
       console.log(resp.error)
       return null;
     }else{
       let datas  = resp.data; 
-      console.log(datas)
-      return datas; 
+      return datas[0]; 
     }
   }
 
   public async batterieGröße(größe: number, verbrauch: number): Promise<number|null>{
     console.log(`Abfrage Batteriegröße mit input: ${größe} und verbrauch: ${verbrauch}`); 
-    let resp = await this.superbaseClient.from('Batterie').select(verbrauch.toString()).gt('GroeßePV', größe).limit(1).returns<number>();  
+    let resp = await this.superbaseClient.from('Batterie').select(verbrauch.toString()).gt('GroeßePV', größe).limit(1);  
 
     if(resp.error){
       console.log(resp.error)
       return null;
     }else{ 
-      let datas  = resp.data; 
-      return datas; 
+      let coloum:any = verbrauch.toString();
+      return Number( resp.data[0][coloum]); 
     }
   }
 

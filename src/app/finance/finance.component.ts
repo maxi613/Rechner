@@ -17,7 +17,7 @@ export class FinanceComponent {
     costsPreviosHeating: new FormControl(''),  
     laufzeit: new FormControl('')
   }); 
-
+  duration: number | null = null;
   private formservice = inject(FormserviceService); 
   private superbase = inject(SuperbaseService); 
   ngOnInit(){
@@ -31,6 +31,7 @@ export class FinanceComponent {
   }
 
   caculate(){
+    
    /* Promise.all([this.formservice.autarkieGrad(), this.formservice.amortisationZeit(), this.formservice.eingenVerbrauchsanteil(), this.formservice.invenstitionsKosten() ]).then(([
       autarkeiGrad,
       armortisationsZeit, 
@@ -42,11 +43,12 @@ export class FinanceComponent {
       console.log(`Eigenverbrauchsanteil: ${eigenverbrauchsanteil}`); 
       console.log(`Investitionskosten: ${investitionskosten}`); 
     }); */
-    /*this.formservice.autarkieGrad().then(value=>{
-      console.log(`Autarkiegrad: ${value}`); 
-    });*/
-    this.formservice.PVErtrag().then(value=>{
-      console.log(`PV ertrag: ${value}`); 
-    })
+    const startTime = new Date().getTime();
+    this.formservice.autarkieGrad().then(value=>{
+      console.log(`Autakiegrad: ${value}`); 
+      const endTime = new Date().getTime();
+      this.duration = endTime - startTime;
+      console.log(`Dauer Berechnung: ${this.duration} ms`)
+    });
   }
 }

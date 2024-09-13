@@ -3,7 +3,7 @@ export interface nutzungsAufteilung{
     Wasser: number, 
     Strom: number, 
     Waerme: number, 
-    LadenEfahrzeuge: number, 
+    LadenEfahrzeug: number, 
 }
 
 export interface überProduktionProMonat{
