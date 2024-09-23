@@ -51,4 +51,6 @@ export class FinanceComponent {
       console.log(`Dauer Berechnung: ${this.duration} ms`)
     });
   }
+
+  
 }
