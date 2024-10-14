@@ -34,7 +34,10 @@ export class FinanceComponent {
     this.formservice.StromverbrauchWasser().then((value)=>{
       console.log(`StromverbrauchWasser: ${value}`);
     })
-
+    this.formservice.calculateConsuption().then((value)=>{
+      console.log("Verbräuche")
+      console.log(value)
+    });
     this.formservice.stromverbrauchEfahrzeug(); 
   }
 }

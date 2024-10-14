@@ -179,6 +179,16 @@ export class SuperbaseService {
       return null; 
     }
   }
+
+  async getConsuption() {
+    let response = await  this.superbaseClient.from('Verbraeuche').select('*'); 
+    if(response.error){
+      console.log(response.error); 
+    }
+
+    return response; 
+  }
+
   private getHeizgrenztemperatur(energyClass: string): number{
 
     switch(energyClass){

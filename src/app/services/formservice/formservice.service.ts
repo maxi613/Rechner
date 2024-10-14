@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators
 import { SuperbaseService } from '../superbase.service';
 import { Wärmepumpe } from '../../shared/models/heatingpump';
 import { energyClass, insolation } from '../../shared/models/energyClass';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root'
@@ -282,6 +283,12 @@ export class FormserviceService {
       let spezHeizlast = this.energyClasses.get(this._house.controls['insolation'].value); 
       return Number( this._house.controls['area'].value *  spezHeizlast);
     }
+  }
+
+  public async calculateConsuption(){
+   let consuptions:PostgrestSingleResponse<any> = await  this.supabaseService.getConsuption();
+    return consuptions.data; 
+   console.log(consuptions.data); 
   }
 
   private getHeizgrenztemperatur(energyClass: string): number{
