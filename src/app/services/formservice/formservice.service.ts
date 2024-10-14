@@ -357,14 +357,14 @@ export class FormserviceService {
     let neigung: number = Number( this._pvControl.controls['angleOfRoof'].value?.replace(',', '.')) ||0 ; 
     let powerPv: number = Number ( this._pvControl.controls['powerOfPV'].value) || 0
     this._pvNutzung = await this.supabaseService.getPVNutzung(neigung, richtung) || 0 ; 
-
+    let verbrauchProJahr = await this.caculateConsuptions(); 
     const solarEinstrahlleistung: number = 1212.17; 
     if(this._pvControl.controls['hasPV'].value){
       let ertrag = this._pvNutzung/100 * solarEinstrahlleistung * powerPv; 
       console.log(`PV Ertrag: ${ertrag}`); 
       return ertrag;
     }else{
-      let verbrauchProJahr = await this.caculateConsuptions(); 
+     
       let verbrauchJahr: number = 0; 
 
       verbrauchProJahr.forEach((verbrauch: totalConsuptions)=>{
@@ -380,12 +380,12 @@ export class FormserviceService {
   private async PVPerformance(): Promise< number>{
 
     let powerPv: number = Number ( this._pvControl.controls['powerOfPV'].value) || 0
-
+    let verbrauchProJahr = await this.caculateConsuptions();
     if(this._pvControl.controls['hasPV'].value){
       console.log(`PV performance: ${powerPv}`); 
       return powerPv;
     }else{
-      let verbrauchProJahr = await this.caculateConsuptions();
+     
       let verbrauchJahr: number = 0; 
       verbrauchProJahr.forEach((verbrauch: totalConsuptions)=>{
         verbrauchJahr = verbrauchJahr + verbrauch.consuptions; 
@@ -412,15 +412,18 @@ export class FormserviceService {
         ertrag: ertragStrom
       }
       
-      console.log(stromertrag)
-      stromertragProMonat.push(stromertrag);
-      console.log(`danach: ${ertragStrom}`)// es hat ein wert
-      console.log(stromertrag)
+      
+      if(typeof consuption.Stromertrag === 'number' && typeof pvErtrag === 'number'){
+        console.log(stromertrag)
+        stromertragProMonat.push(stromertrag);
+        console.log(`danach: ${ertragStrom}`)// es hat ein wert
+        console.log(stromertrag)
+      }
     }
     console.log(stromertragProMonat);
       
     console.log(`Stromertrag pro monat:`); 
-    console.log(stromertragProMonat); //stromertragProMonat.ertrag = 0 ... 
+    console.log(stromertragProMonat[0].ertrag); //stromertragProMonat.ertrag = 0 ... 
     return stromertragProMonat;
   }
 
@@ -439,21 +442,19 @@ export class FormserviceService {
       for (let [index, ertrag] of this._stromertrag.entries()){
           let verbrauchStrom = resp[index].Strom *  this.Stromverbrauch(); 
           let verbrauchEfahrzeug = resp[index].EFahrzeug * this.stromverbrauchEfahrzeug();
+
           if(zeitraum == '18-6'){
             ertrag.ertrag = 0; 
           }
+          console.log(`Log in Überproduktion: ${this._stromverbrauchHeizen}  ${this._stromverbrauchWasser} `);
           let überProduktion:number = ertrag.ertrag - (verbrauchStrom* aufteilung.Strom) -  (stromverbrauchWasser*aufteilung.Wasser) - (stromverbrauchHeizen*aufteilung.Waerme)- (verbrauchEfahrzeug*aufteilung.LadenEfahrzeug); 
-          if(überProduktion >0){
-            überProduktionProMonat.push({
-              value: überProduktion, 
-              monat: ertrag.monat
-            }); 
-          }else{
-            überProduktionProMonat.push({
-              value: 0, 
-              monat: ertrag.monat
-            }); 
-          }
+          console.log(`Überproduktion: ${überProduktion}`);
+    
+          überProduktionProMonat.push({
+            value: überProduktion, 
+            monat: ertrag.monat
+          }); 
+
       }
     }
     console.log(`Überproduktion pro monat:`); 
@@ -465,6 +466,7 @@ export class FormserviceService {
     let überproduktion = this._überproduktion618;
     let bezugProMonat: bezugProMonat[] = []
     überproduktion.forEach((value)=>{
+      console.log(`Überpoduktion 6-18: ${value.value}`)
       if(value.value <=0 ){
         bezugProMonat.push({
           monat: value.monat, 
@@ -476,6 +478,7 @@ export class FormserviceService {
           value: 0
         })
       }
+
     }) 
     console.log(`Bezug 6-18 pro monat:`); 
     console.log(bezugProMonat);
@@ -486,6 +489,7 @@ export class FormserviceService {
     let überproduktion = await this.überProduktion('18-6'); 
     let bezugProMonat: bezugProMonat[] = []
     überproduktion.forEach((value)=>{
+      console.log(`Überpoduktion 18-6: ${value.value}`)
       if(value.value <=0 ){
         bezugProMonat.push({
           monat: value.monat, 
@@ -500,9 +504,10 @@ export class FormserviceService {
 
   public async calulateBatteriegröße():Promise< BatterKapazität[]>{
     let batteriegröße: number = 0; 
+    let verbrauchProJahr = await this.caculateConsuptions(); 
     if(!this._pvControl.controls['hasBattery'].value && this._pvControl.controls['wantsBattery']){
       let pvPerformance = await this.PVPerformance(); 
-      let verbrauchProJahr = await this.caculateConsuptions(); 
+
       let verbrauchJahr: number = 0; 
       verbrauchProJahr?.forEach((verbrauch: totalConsuptions)=>{
         verbrauchJahr += verbrauch.consuptions; 
@@ -570,7 +575,6 @@ export class FormserviceService {
     let speicherNutzungMax = this._speicherNutzungMax;
     let speichernutzungNormal: SpeicherNutzungNormal[] = []; 
     console.log('Überproduktion bei speichernuetzuung normal:'); 
-    console.log(überProduktion186); 
     überProduktion186.forEach((value, index)=>{
       if( Math.abs( value.value) < speicherNutzungMax[index].value){
         console.log('überproduktion kleiner als speichernutzung max')
@@ -650,15 +654,22 @@ export class FormserviceService {
     let speichernutzungNormal = await this.SpeicherNutzungNormal(); 
     let bezug186 = await this.bezug186(); 
     let bezug618 = await this.bezug618();
-
     speichernutzungNormal.forEach((value, index)=>{
+      console.log(`Bezug 6-18: ${bezug618[index].value}}`);
+      console.log(`Bezug 18-6: ${bezug186[index].value}`);
+
+      let _bezug: BezugProMonat = {
+        monat: value.monat, 
+        value: value.value + bezug186[index].value + bezug618[index].value
+      }
       bezug.push({
         monat: value.monat, 
         value: value.value + bezug186[index].value + bezug618[index].value
       })
+      console.log(`Bezug pro monat:`); 
+      console.log(_bezug);
     });
-    console.log(`Bezug pro monat:`); 
-    console.log(bezug);
+
     return bezug; 
   }
 
@@ -823,11 +834,11 @@ export class FormserviceService {
   }
 
   private async kostenBaterrieSpeicher(){
+    let verbrauchProJahr = await this.caculateConsuptions(); 
     if(this._pvControl.controls['hasBattery']){
       return Number(this._pvControl.controls['costsBattery'].value?.replace(',','.'));
     }else{
       let pvPerformance = await this.PVPerformance(); 
-      let verbrauchProJahr = await this.caculateConsuptions(); 
       let verbrauchJahr: number = 0; 
       verbrauchProJahr.forEach((verbrauch: totalConsuptions)=>{
         verbrauchJahr = verbrauchJahr + verbrauch.consuptions; 
@@ -854,6 +865,7 @@ export class FormserviceService {
     let stromertragJährlich: number= 0; 
     let einspeißungJärhlich: number =0;
     let bezugJährlich: number = 0;
+    this._stromertrag = await this.StromertragProMonat(); 
     this._stromertrag.forEach(value=>{
       stromertragJährlich = stromertragJährlich + value.ertrag; 
     }); 
@@ -863,6 +875,9 @@ export class FormserviceService {
     bezugGesamt.forEach(value=>{
       bezugJährlich = bezugJährlich + value.value; 
     }); 
+    console.log(`Stromertrag jährlich: ${stromertragJährlich}`);
+    console.log(`Einspeisung jährlich: ${einspeißungJärhlich}`);
+    console.log(`Bezug jährlich: ${bezugJährlich}`);
     console.log(`Autarkiegrad: ${(stromertragJährlich - einspeißungJärhlich)/(stromertragJährlich - einspeißungJärhlich+ Math.abs(bezugJährlich))}`);
     return (stromertragJährlich - einspeißungJärhlich)/(stromertragJährlich - einspeißungJärhlich+ Math.abs(bezugJährlich)); 
     
