@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { SuperbaseService } from '../services/superbase.service';
+import { SuperbaseService } from '../services/supabaseservice/superbase.service';
 
 @Component({
   selector: 'app-login',

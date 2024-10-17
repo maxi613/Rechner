@@ -17,10 +17,3 @@ export interface PVNutzung{
     Neigung:number, 
     Nutzung: number
 }
-
-export interface Nutzungsaufteilung{
-    Zeitraum:string, 
-    Wasser: number, 
-    Strom: number, 
-    Wärme: number
-}

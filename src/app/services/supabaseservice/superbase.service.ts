@@ -4,15 +4,18 @@ import {
   AuthSession,
   AuthTokenResponse,
   createClient,
+  PostgrestError,
   Session,
   SupabaseClient,
   User,
 } from '@supabase/supabase-js'
-import { usage } from '../shared/models/usage.model';
-import { SuperbaseEnv, userLogin } from '../shared/environment';
+import { SuperbaseEnv, userLogin } from '../../shared/environment';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Wärmepumpe } from '../shared/models/heatingpump';
-import { energyClass, insolation } from '../shared/models/energyClass';
+import { Wärmepumpe } from '../../shared/models/heatingpump';
+import { energyClass, insolation } from '../../shared/models/energyClass';
+import { consuptions } from '../../shared/models/consuptions';
+import { nutzungsAufteilung } from '../../shared/models/nutzungsaufteilung';
+import { BatterieGroesse } from '../../shared/models/batterie';
 @Injectable({
   providedIn: 'root'
 })
@@ -98,7 +101,6 @@ export class SuperbaseService {
   }
 
   async getJazWaterErdkollektor( leistung: number): Promise<number | null>{
-    console.log(`Abfrage Erdkollektor mit leistung: ${leistung}`);
     let  jaz = await this.superbaseClient
     .from('jaz_sole')
     .select('JAZmitFBHWW').gt('Wärmeleistung', leistung).limit(1).single();
@@ -180,16 +182,65 @@ export class SuperbaseService {
     }
   }
 
-  async getConsuption() {
-    let response = await  this.superbaseClient.from('Verbraeuche').select('*'); 
-    if(response.error){
-      console.log(response.error); 
+  public async getConsuptions():Promise<consuptions[] | null>{
+    let reps = await this.superbaseClient.from('Verbraeuche').select<any>('*').returns<consuptions[]>();
+    if(reps.error){
+      console.log(reps.error)
+      return null;
+    }else{
+      let datas  = reps.data; 
+      return datas; 
     }
-
-    return response; 
   }
 
-  private getHeizgrenztemperatur(energyClass: string): number{
+  public async getPVNutzung(neigung: number, richtung: number): Promise<number| null>{
+    console.log('Abfrage PV Nutzung:'); 
+    console.log(`Richtung: ${richtung}`); 
+    console.log(`Neigung: ${neigung}`); 
+    if(neigung> 80){
+      neigung = 80; 
+    }
+    if(richtung > 80){
+      richtung = 80;
+    }
+    let resp = await this.superbaseClient.from('PVNutzung').select('Nutzung').gte('Richtung', richtung).gte('Neigung', neigung).limit(1).single();
+    if(resp.error){
+      console.log(resp.error)
+      return null;
+    }else{
+      let datas  = Number(resp.data.Nutzung); 
+      console.log(`Response: ${datas}`)
+      return datas; 
+    }
+  }
+
+  public async getNutzungsAufteilung(zeitraum: string): Promise<nutzungsAufteilung|  null>{
+    console.log(`Abfrage Nutzungsaufteilung mit input: ${zeitraum}`)
+    let resp = await this.superbaseClient.from('Nutzungsaufteilung').select('*').eq('Zeitraum', zeitraum).returns<nutzungsAufteilung[]>(); 
+    if(resp.error){
+      console.log(resp.error)
+      return null;
+    }else{
+      let datas  = resp.data; 
+      return datas[0]; 
+    }
+  }
+
+  public async batterieGröße(größe: number, verbrauch: number): Promise<number|null>{
+    console.log(`Abfrage Batteriegröße mit input: ${größe} und verbrauch: ${verbrauch}`); 
+    let resp = await this.superbaseClient.from('Batterie').select(verbrauch.toString()).gt('GroeßePV', größe).limit(1);  
+
+    if(resp.error){
+      console.log(resp.error)
+      return null;
+    }else{ 
+      let coloum:any = verbrauch.toString();
+      return Number( resp.data[0][coloum]); 
+    }
+  }
+
+  
+  public getHeizgrenztemperatur(energyClass: string): number{
 
     switch(energyClass){
       case "A+":{
@@ -225,8 +276,7 @@ export class SuperbaseService {
     }
   }
 
-
-  private getHeizgrenztemperaturByInsolation(Insolation: string): number{
+  public getHeizgrenztemperaturByInsolation(Insolation: string): number{
     switch(Insolation){
       case "KfW-Effizienzhaus 100":{
         return 15;

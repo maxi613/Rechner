@@ -1,6 +1,7 @@
 import { Component , inject} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FormserviceService } from '../services/formservice/formservice.service';
+import { SuperbaseService } from '../services/supabaseservice/superbase.service';
 @Component({
   selector: 'app-finance',
   templateUrl: './finance.component.html',
@@ -14,11 +15,11 @@ export class FinanceComponent {
     energyCosts: new FormControl(''),
     vergütung: new FormControl(''), 
     costsPreviosHeating: new FormControl(''),  
-
+    laufzeit: new FormControl('')
   }); 
-
+  duration: number | null = null;
   private formservice = inject(FormserviceService); 
-
+  private superbase = inject(SuperbaseService); 
   ngOnInit(){
     this.finance = this.formservice.GetFinance; 
   }
@@ -30,14 +31,8 @@ export class FinanceComponent {
   }
 
   caculate(){
-    console.log('berechnen'); 
-    this.formservice.StromverbrauchWasser().then((value)=>{
-      console.log(`StromverbrauchWasser: ${value}`);
-    })
-    this.formservice.calculateConsuption().then((value)=>{
-      console.log("Verbräuche")
-      console.log(value)
-    });
-    this.formservice.stromverbrauchEfahrzeug(); 
+    
   }
+
+  
 }

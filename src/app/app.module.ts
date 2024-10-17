@@ -13,6 +13,11 @@ import { ResidentInputsComponent } from './resident-inputs/resident-inputs.compo
 import { PvInputsComponent } from './pv-inputs/pv-inputs.component';
 import { HeatingpumpIntputsComponent } from './heatingpump-intputs/heatingpump-intputs.component';
 import { FinanceComponent } from './finance/finance.component';
+import { OutputComponent } from './output/output.component';
+import { PlotlyModule } from 'angular-plotly.js';
+import * as PlotlyJS from 'plotly.js-dist-min';
+
+PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
   declarations: [
@@ -22,14 +27,16 @@ import { FinanceComponent } from './finance/finance.component';
     ResidentInputsComponent,
     PvInputsComponent,
     HeatingpumpIntputsComponent,
-    FinanceComponent, 
+    FinanceComponent,
+    OutputComponent
   ],
   imports: [
     MatSelectModule,
     MatChipsModule,
     BrowserModule,
     AppRoutingModule, 
-    ReactiveFormsModule
+    ReactiveFormsModule, 
+    PlotlyModule
   ],
   providers: [
     provideAnimationsAsync()

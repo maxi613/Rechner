@@ -1,0 +1,13 @@
+<div class="main">
+    <button type="button" (click)="calculate()" >
+        Berechnen
+    </button>
+    <div class="diagram-div">
+        <plotly-plot [data]="graph.data" [layout]="graph.layout"></plotly-plot>
+        <plotly-plot [data]="graph2.data" [layout]="graph2.layout"></plotly-plot>
+        <div class="output">
+            <h3>Armotisationsdauer: {{amortisation}} Jahre</h3>
+            <h3>Investionskosten: {{investition}}€</h3>
+        </div>
+    </div>
+</div>

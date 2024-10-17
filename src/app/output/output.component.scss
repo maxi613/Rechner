@@ -1,0 +1,50 @@
+$secondary: #83e05e;
+
+.diagram-div{
+   display: flex;
+   color: rgb(255, 255, 255);
+}
+
+.output{
+    display: flex;
+    flex-direction:column;
+    padding: 10px;
+    background-color: rgba(161, 161, 161, 0.295);
+    height: 100%;
+    border-radius: 5px;
+    box-shadow: 10px;
+}
+
+.main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+button{
+    background-color: $secondary;
+    width: 10%;
+    height: 5vh;
+    color: rgba(85, 85, 85, 0.845);
+    border-radius: 5px;
+    border: none;
+    font-size: 15px;
+    transition: all 0.2s;
+    font-weight: bold;
+    &:hover{
+        cursor: pointer;
+        background-color: #35bc00;
+        color: white;
+
+    }
+
+
+    img{
+        height: 100%;
+        width: auto;
+    }
+}
+
+
+

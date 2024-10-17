@@ -14,6 +14,11 @@
                 <label for="zinssatz" class="form__label">Zinssatz:</label>
             </div>
             <div class="form-error" *ngIf="finance.get('zinssatz')?.errors && finance.get('zinssatz')?.touched">*Zinssatz fehlt</div>
+            <div class="form__group field">
+                <input type="input" class="form__field" placeholder="Laufzeit" name="laufzeit" id='laufzeit' formControlName="laufzeit" required />
+                <label for="zinssatz" class="form__label">Laufzeit:</label>
+            </div>
+            <div class="form-error" *ngIf="finance.get('laufzeit')?.errors && finance.get('laufzeit')?.touched">*Laufzeit fehlt</div>
         }
         <div class="form__group field">
             <input type="input" class="form__field" placeholder="Stromkosten" name="energyCosts" id='energyCosts' formControlName="energyCosts" required />
@@ -33,11 +38,5 @@
     </div>
     <div class="next-container">
         <button type="button" routerLink="/HeatingpumpIntputs" ><img src="assets/left.png"></button>
-        <button type="submit">
-            Submit
-        </button>
-        <button type="button" (click)="caculate()">
-            Berechnen
-        </button>
     </div>
 </form>
