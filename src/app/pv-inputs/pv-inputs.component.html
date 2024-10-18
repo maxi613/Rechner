@@ -16,9 +16,9 @@
             <div class="form-error" *ngIf="pvControl.get('powerOfPV')?.errors && pvControl.get('powerOfPV')?.touched">*PV Leistung fehlt</div>
             <div class="form__group field">
                 <input type="input" class="form__field" placeholder="Investionskosten PV" name="costsOfPv" id='costsOfPv' formControlName="costsOfPv" required />
-                <label for="costsOfPv" class="form__label">Investionskosten PV</label>
+                <label for="costsOfPv" class="form__label">Investitionskosten PV [€]</label>
             </div>
-            <div class="form-error" *ngIf="pvControl.get('costsOfPv')?.errors && pvControl.get('costsOfPv')?.touched">*Investionskosten fehlen</div>
+            <div class="form-error" *ngIf="pvControl.get('costsOfPv')?.errors && pvControl.get('costsOfPv')?.touched">*Investitionskosten fehlen</div>
             }
             <div class="form__group field">
                 <input type="input" class="form__field" placeholder="Hausrichtung" name="directionOfHouse" id='directionOfHouse' formControlName="directionOfHouse" required />
@@ -43,9 +43,9 @@
                 <div class="form-error" *ngIf="pvControl.get('capacityBattery')?.errors && pvControl.get('capacityBattery')?.touched">*Batterie Kapazität fehlt</div>
                 <div class="form__group field">
                     <input type="input" class="form__field" placeholder="Investionskosten Batterie" name="costsBattery" id='costsBattery' formControlName="costsBattery" required />
-                    <label for="costsBattery" class="form__label">Investionskosten Batterie</label>
+                    <label for="costsBattery" class="form__label">Investitionskosten Batterie [€]</label>
                 </div>
-                <div class="form-error" *ngIf="pvControl.get('costsBattery')?.errors && pvControl.get('costsBattery')?.touched">*Investionskosten fehlen</div>
+                <div class="form-error" *ngIf="pvControl.get('costsBattery')?.errors && pvControl.get('costsBattery')?.touched">*Investitionskosten fehlen</div>
             }@else {
                 <div class="checkform">
                     <label>Batterie gewünscht?</label>

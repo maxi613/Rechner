@@ -76,7 +76,7 @@ public graph2 = {
       this.graph2.data[0].values= [ autarkeiGrad[1],1-autarkeiGrad[1]]; 
       console.log(`Autarkiegrad: ${autarkeiGrad}`); 
       
-      this.investition = Math.round( investitionskosten[0]*100)/100; 
+      this.investition = Math.round( (investitionskosten[0]*100)/100) +10000; 
       this.amortisation = Math.round( investitionskosten[1]*100)/100; 
     });
   }

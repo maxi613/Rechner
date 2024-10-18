@@ -717,7 +717,7 @@ export class FormserviceService {
   }
 
   public async invenstitionsKosten():Promise<[number, number]>{
-    let investitionskosten = await this.pvKosten() + await this.pumpenKosten() + await this.kostenBaterrieSpeicher(); 
+    let investitionskosten =( await this.pvKosten() + await this.pumpenKosten() + await this.kostenBaterrieSpeicher())+10000; 
 
     return[investitionskosten, await this.amortisationZeit(investitionskosten)]
   }

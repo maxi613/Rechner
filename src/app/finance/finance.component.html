@@ -22,17 +22,17 @@
         }
         <div class="form__group field">
             <input type="input" class="form__field" placeholder="Stromkosten" name="energyCosts" id='energyCosts' formControlName="energyCosts" required />
-            <label for="energyCosts" class="form__label">Stromkosten:</label>
+            <label for="energyCosts" class="form__label">Stromkosten [€/kWh]:</label>
         </div>
         <div class="form-error" *ngIf="finance.get('energyCosts')?.errors && finance.get('energyCosts')?.touched">*Stromkosten fehlt</div>
         <div class="form__group field">
             <input type="input" class="form__field" placeholder="Stromkosten" name="vergütung" id='vergütung' formControlName="vergütung" required />
-            <label for="vergütung" class="form__label">Einspießevergütung:</label>
+            <label for="vergütung" class="form__label">Einspeisevergütung [€/kWh]:</label>
         </div>
-        <div class="form-error" *ngIf="finance.get('vergütung')?.errors && finance.get('vergütung')?.touched">*Einspießevergütung fehlt</div>
+        <div class="form-error" *ngIf="finance.get('vergütung')?.errors && finance.get('vergütung')?.touched">*Einspeisevergütung fehlt</div>
         <div class="form__group field">
             <input type="input" class="form__field" placeholder="Stromkosten" name="costsPreviosHeating" id='costsPreviosHeating' formControlName="costsPreviosHeating" required />
-            <label for="costsPreviosHeating" class="form__label">Kosten des vorherigen Energieträgers:</label>
+            <label for="costsPreviosHeating" class="form__label">Kosten vorheriger Energieträger [€]:</label>
         </div>
         <div class="form-error" *ngIf="finance.get('costsPreviosHeating')?.errors && finance.get('costsPreviosHeating')?.touched">*Kosten des vorherigen Energieträgers fehlt</div>
     </div>
